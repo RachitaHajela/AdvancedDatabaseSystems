@@ -28,7 +28,19 @@ public class Site {
     status = ServerStatus.UP;
   }
   
-  public void addVariableToSite(Variable variable) {
+  public int getId() {
+	return id;
+}
+
+public ServerStatus getStatus() {
+	return status;
+}
+
+public void setStatus(ServerStatus status) {
+	this.status = status;
+}
+
+public void addVariableToSite(Variable variable) {
     variables.put(variable.getId(), variable);
   }
   
@@ -56,7 +68,7 @@ public class Site {
     StringBuilder str = new StringBuilder();
     for(int i = 1; i <= TransactionManager.numberOfTotalVariables; i++ ) {
       if( variables.containsKey(i)) {
-        str.append(i + ":" + variables.get(i).getValue() + ",");
+        str.append("x"+i + ":" + variables.get(i).getValue() + ",");
       }
     }
     

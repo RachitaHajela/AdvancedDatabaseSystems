@@ -1,5 +1,6 @@
 package nyu.edu.src.transcation;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import nyu.edu.src.store.Site;
@@ -13,15 +14,47 @@ public class TransactionManager {
 	private List<Site> sites;
 	private List<Transaction> transactions;
 	private List<Transaction> waitingTransactions;
+	int currentTime = 1;
 
 	/**
 	 * sets up the initial database: sites with variables and their initial
 	 * values
 	 */
 	public void setUp() {
+		// creating variables
+		List<Variable> varList = new ArrayList<Variable>();
+		for (int i = 1; i <= 20; i++) {
+			Variable v = new Variable(i, i * 10);
+			varList.add(v);
+		}
+		// creating sites
+		sites = new ArrayList<Site>();
+		for (int i = 1; i <= 10; i++) {
+			Site site = new Site(i);
+			sites.add(site);
+		}
 
+		// adding variables to site
+		for (int i = 1; i <= 20; i++) {
+			// var is odd
+			if (i % 2 != 0) {
+				sites.get(i % 10).addVariableToSite(varList.get(i - 1));
+			} else { // add to all sites
+				for (int j = 0; j < 10; j++) {
+					sites.get(j).addVariableToSite(varList.get(i - 1));
+				}
+			}
+		}
 	}
 
+	/**
+	 * increases the time by one. (equivalent to 1 tick
+	 */
+	public void tick() {
+		currentTime++;
+
+		// to do - function to check on waiting transactions
+	}
 
 	/**
 	 * transaction makes a commit request
@@ -30,9 +63,10 @@ public class TransactionManager {
 	 * @param timeStamp
 	 */
 	public void commitRequest(Transaction transaction, int timestamp) {
-	    System.out.println("COMMIT : timestamp = " + timestamp + ", transaction = " + transaction);
+		System.out.println("COMMIT : timestamp = " + timestamp
+				+ ", transaction = " + transaction);
 	}
-	
+
 	/**
 	 * transaction begins
 	 * 
@@ -40,9 +74,10 @@ public class TransactionManager {
 	 * @param transaction
 	 */
 	public void begin(int timestamp, String transaction) {
-	    System.out.println("BEGIN : timestamp = " + timestamp + ", transaction = " + transaction);
+		System.out.println("BEGIN : timestamp = " + timestamp
+				+ ", transaction = " + transaction);
 	}
-	
+
 	/**
 	 * transaction begins in Read-Only mode
 	 * 
@@ -50,9 +85,10 @@ public class TransactionManager {
 	 * @param transaction
 	 */
 	public void beginRO(int timestamp, String transaction) {
-	    System.out.println("BEGINRO : timestamp = " + timestamp + ", transaction = " + transaction);
+		System.out.println("BEGINRO : timestamp = " + timestamp
+				+ ", transaction = " + transaction);
 	}
-	
+
 	/**
 	 * transaction ends
 	 * 
@@ -60,9 +96,10 @@ public class TransactionManager {
 	 * @param transaction
 	 */
 	public void end(int timestamp, String transaction) {
-	    System.out.println("END : timestamp = " + timestamp + ", transaction = " + transaction);
+		System.out.println("END : timestamp = " + timestamp
+				+ ", transaction = " + transaction);
 	}
-	
+
 	/**
 	 * site fails
 	 * 
@@ -70,9 +107,10 @@ public class TransactionManager {
 	 * @param siteID
 	 */
 	public void fail(int timestamp, int siteID) {
-	    System.out.println("FAIL : timestamp = " + timestamp + ", siteID = " + siteID);
+		System.out.println("FAIL : timestamp = " + timestamp + ", siteID = "
+				+ siteID);
 	}
-	
+
 	/**
 	 * site recovers
 	 * 
@@ -80,9 +118,9 @@ public class TransactionManager {
 	 * @param siteID
 	 */
 	public void recover(int siteID) {
-	    System.out.println("RECOVER : siteID = " + siteID);
+		System.out.println("RECOVER : siteID = " + siteID);
 	}
-	
+
 	/**
 	 * transaction makes a write request
 	 * 
@@ -91,12 +129,14 @@ public class TransactionManager {
 	 * @param variable
 	 * @param val
 	 */
-	public void writeRequest(int timestamp, String transaction, String variable, String val) {
-	    int value = Integer.parseInt(val);
-	    System.out.println("WRITE : timestamp = " + timestamp + ", transaction = " + transaction + 
-		    ", variable = " + variable + ", value = " + value);
+	public void writeRequest(int timestamp, String transaction,
+			String variable, String val) {
+		int value = Integer.parseInt(val);
+		System.out.println("WRITE : timestamp = " + timestamp
+				+ ", transaction = " + transaction + ", variable = " + variable
+				+ ", value = " + value);
 	}
-	
+
 	/**
 	 * transaction makes a read request
 	 * 
@@ -105,16 +145,17 @@ public class TransactionManager {
 	 * @param variable
 	 */
 	public void readRequest(int timestamp, String transaction, String variable) {
-	    System.out.println("READ : timestamp = " + timestamp + ", transaction = " + transaction + 
-		    ", variable = " + variable);
+		System.out
+				.println("READ : timestamp = " + timestamp + ", transaction = "
+						+ transaction + ", variable = " + variable);
 	}
-	
+
 	/**
 	 * gives the committed values of all copies of all variables at all sites,
 	 * sorted per site.
 	 */
 	public void dump() {
-	    System.out.println("DUMP :");
+		System.out.println("DUMP :");
 	}
 
 	/**
@@ -123,7 +164,9 @@ public class TransactionManager {
 	 * @param siteNum
 	 */
 	public void dump(int siteNum) {
-	    System.out.println("DUMP : siteNum = " + siteNum);
+		System.out.println("DUMP : siteNum = " + siteNum);
+
+		System.out.println(sites.get(siteNum - 1).getVariables());
 	}
 
 	/**
