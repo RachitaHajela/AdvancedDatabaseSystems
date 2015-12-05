@@ -77,6 +77,15 @@ public class Site {
 		return str.toString();
 	}
 
+	public String getVariable(int variableID) {
+		if (!variables.containsKey(variableID)) {
+			return "ignore";
+		}
+
+		return "x" + variableID + ":" + variables.get(variableID).getValue()
+				+ " ";
+	}
+
 	/*
 	 * public Lock isItLocked(String id) { return
 	 * isItLocked(getWithoutStartingX(id)); }
@@ -152,19 +161,19 @@ public class Site {
 			}
 		}
 	}
-	
-	public void getReadLock(Transaction trans,String variable) {
-		if(lockTable.containsKey(variable)) {
-			Lock lock = new Lock(trans,LockType.READ);
+
+	public void getReadLock(Transaction trans, String variable) {
+		if (lockTable.containsKey(variable)) {
+			Lock lock = new Lock(trans, LockType.READ);
 			ArrayList<Lock> locks = lockTable.get(variable);
 			locks.add(lock);
 			lockTable.put(variable, locks);
-		}
-		else {
-			Lock lock = new Lock(trans,LockType.READ);
+		} else {
+			Lock lock = new Lock(trans, LockType.READ);
 			ArrayList<Lock> locks = new ArrayList<Lock>();
 			locks.add(lock);
 			lockTable.put(variable, locks);
 		}
 	}
+
 }

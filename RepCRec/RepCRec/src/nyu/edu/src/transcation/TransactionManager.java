@@ -19,7 +19,7 @@ public class TransactionManager {
 
 	private List<Site> sites;
 	private Map<String, Transaction> transactionsMap;
-	private List<WaitOperation> waitingOperations; 
+	private List<WaitOperation> waitingOperations;
 	int currentTime = 1;
 
 	/**
@@ -112,25 +112,27 @@ public class TransactionManager {
 			if (sites.get(i).getStatus() == ServerStatus.UP) {
 				for (int var = 2; var <= 20; var = var + 2) {
 					snapshot.put("x" + var, sites.get(i).read(var));
-					/*System.out
-							.println("x" + var + " " + sites.get(i).read(var));*/
+					/*
+					 * System.out .println("x" + var + " " +
+					 * sites.get(i).read(var));
+					 */
 				}
 				break;
 			}
 
 		}
-		//adding odd variables
-		for(int i=1;i<10;i=i+2) {
-			if(sites.get(i).getStatus() == ServerStatus.UP) {
-				snapshot.put("x"+i, sites.get(i).read(i));
-				snapshot.put("x"+(i+10), sites.get(i).read(i+10));
-				/*System.out
-				.println("x" + i + " " + sites.get(i).read(i));	
-				System.out
-				.println("x" + (i+10) + " " + sites.get(i).read(i+10));
-*/			}
+		// adding odd variables
+		for (int i = 1; i < 10; i = i + 2) {
+			if (sites.get(i).getStatus() == ServerStatus.UP) {
+				snapshot.put("x" + i, sites.get(i).read(i));
+				snapshot.put("x" + (i + 10), sites.get(i).read(i + 10));
+				/*
+				 * System.out .println("x" + i + " " + sites.get(i).read(i));
+				 * System.out .println("x" + (i+10) + " " +
+				 * sites.get(i).read(i+10));
+				 */}
 		}
-		//System.out.println(snapshot.size());
+		// System.out.println(snapshot.size());
 		return snapshot;
 	}
 
@@ -190,37 +192,37 @@ public class TransactionManager {
 	 * @param variable
 	 */
 	public void readRequest(int timestamp, String transactionID, String variable) {
-		System.out
-				.println("READ : timestamp = " + timestamp + ", transaction = "
-						+ transactionID + ", variable = " + variable);
-		
+		System.out.println("READ : timestamp = " + timestamp
+				+ ", transaction = " + transactionID + ", variable = "
+				+ variable);
+
 		Transaction transaction = transactionsMap.get(transactionID);
 		int varNum = Integer.parseInt(variable.substring(1));
-		
-		//if variable is odd
-		if(varNum%2 != 0) {
-			int siteNum = varNum%10;
+
+		// if variable is odd
+		if (varNum % 2 != 0) {
+			int siteNum = varNum % 10;
 			Site site = sites.get(siteNum);
-			if(site.getStatus() == ServerStatus.UP) {
-				
-				if(site.isReadLockAvailable(variable)) {
+			if (site.getStatus() == ServerStatus.UP) {
+
+				if (site.isReadLockAvailable(variable)) {
 					site.getReadLock(transaction, variable);
-					System.out.println(transactionID + " reads "+variable+" value: "+site.read(variable));
+					System.out.println(transactionID + " reads " + variable
+							+ " value: " + site.read(variable));
 				}
-				
-				
-			}
-			else {
+
+			} else {
 				transaction.setTransactionStatus(Status.WAITING);
-				WaitOperation waitOperation = new WaitOperation(transaction, OPERATION.READ, variable);
+				WaitOperation waitOperation = new WaitOperation(transaction,
+						OPERATION.READ, variable);
 				waitingOperations.add(waitOperation);
-				
+
 			}
-		}else //variable is even
+		} else // variable is even
 		{
-			
+
 		}
-		
+
 	}
 
 	/**
@@ -262,6 +264,20 @@ public class TransactionManager {
 	 * @param var
 	 */
 	public void dump(String var) {
+		int variableID = Integer.parseInt(var.substring(1));
 
+		for (Site s : sites) {
+			if (s.getStatus() == ServerStatus.UP) {
+				String val = s.getVariable(variableID);
+				if (!val.equalsIgnoreCase("ignore")) {
+					System.out.println("SITE " + s.getId() + " : "
+							+ s.getVariable(variableID));
+				}
+			} else if (s.getStatus() == ServerStatus.DOWN) {
+				System.out.println("Server is Down!");
+			} else {
+				// TODO serverstatus = Recovering
+			}
+		}
 	}
 }

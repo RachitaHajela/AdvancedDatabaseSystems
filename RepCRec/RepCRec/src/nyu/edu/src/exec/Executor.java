@@ -14,7 +14,7 @@ public class Executor {
 		this.inputFile = inputFile;
 		transactionManager = new TransactionManager();
 		transactionManager.setUp();
-		transactionManager.takeSnapshot();
+		transactionManager.dump("x2");
 	}
 
 	public void readFromInput() {
@@ -89,8 +89,8 @@ public class Executor {
 
 	public static void main(String[] args) {
 		Executor exec = new Executor(
-				"C:/Users/Rachita/repos/adb_repcrec_project/RepCRec/RepCRec/src/nyu/edu/src/testCases/testcase2.txt");
+				"C:/Users/Rachita/repos/adb_repcrec_project/RepCRec/RepCRec/src/nyu/edu/src/testCases/testcase1.txt");
 		// Executor("/Users/anto/Google Drive/NYU3rdSem/ADB/finalProject/adb_repcrec_project/RepCRec/RepCRec/src/nyu/edu/src/testCases/testcase1.txt");
-		 exec.readFromInput();
+		// exec.readFromInput();
 	}
 }
