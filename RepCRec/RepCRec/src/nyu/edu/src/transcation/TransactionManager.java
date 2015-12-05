@@ -22,29 +22,6 @@ public class TransactionManager {
 
 	}
 
-	/**
-	 * transaction makes a read request
-	 * 
-	 * @param transaction
-	 * @param var
-	 * @param timeStamp
-	 */
-	public void readRequest(Transaction transaction, Variable var, int timeStamp) {
-
-	}
-
-	/**
-	 * transaction makes a write request
-	 * 
-	 * @param transaction
-	 * @param var
-	 * @param value
-	 * @param timeStamp
-	 */
-	public void writeRequest(Transaction transaction, Variable var, int value,
-			int timeStamp) {
-
-	}
 
 	/**
 	 * transaction makes a commit request
@@ -52,16 +29,92 @@ public class TransactionManager {
 	 * @param transaction
 	 * @param timeStamp
 	 */
-	public void commitRequest(Transaction transaction, int timeStamp) {
-
+	public void commitRequest(Transaction transaction, int timestamp) {
+	    System.out.println("COMMIT : timestamp = " + timestamp + ", transaction = " + transaction);
 	}
-
+	
+	/**
+	 * transaction begins
+	 * 
+	 * @param timeStamp
+	 * @param transaction
+	 */
+	public void begin(int timestamp, String transaction) {
+	    System.out.println("BEGIN : timestamp = " + timestamp + ", transaction = " + transaction);
+	}
+	
+	/**
+	 * transaction begins in Read-Only mode
+	 * 
+	 * @param timeStamp
+	 * @param transaction
+	 */
+	public void beginRO(int timestamp, String transaction) {
+	    System.out.println("BEGINRO : timestamp = " + timestamp + ", transaction = " + transaction);
+	}
+	
+	/**
+	 * transaction ends
+	 * 
+	 * @param timeStamp
+	 * @param transaction
+	 */
+	public void end(int timestamp, String transaction) {
+	    System.out.println("END : timestamp = " + timestamp + ", transaction = " + transaction);
+	}
+	
+	/**
+	 * site fails
+	 * 
+	 * @param timeStamp
+	 * @param siteID
+	 */
+	public void fail(int timestamp, int siteID) {
+	    System.out.println("FAIL : timestamp = " + timestamp + ", siteID = " + siteID);
+	}
+	
+	/**
+	 * site recovers
+	 * 
+	 * @param timeStamp
+	 * @param siteID
+	 */
+	public void recover(int siteID) {
+	    System.out.println("RECOVER : siteID = " + siteID);
+	}
+	
+	/**
+	 * transaction makes a write request
+	 * 
+	 * @param timeStamp
+	 * @param transaction
+	 * @param variable
+	 * @param val
+	 */
+	public void writeRequest(int timestamp, String transaction, String variable, String val) {
+	    int value = Integer.parseInt(val);
+	    System.out.println("WRITE : timestamp = " + timestamp + ", transaction = " + transaction + 
+		    ", variable = " + variable + ", value = " + value);
+	}
+	
+	/**
+	 * transaction makes a read request
+	 * 
+	 * @param timeStamp
+	 * @param transaction
+	 * @param variable
+	 */
+	public void readRequest(int timestamp, String transaction, String variable) {
+	    System.out.println("READ : timestamp = " + timestamp + ", transaction = " + transaction + 
+		    ", variable = " + variable);
+	}
+	
 	/**
 	 * gives the committed values of all copies of all variables at all sites,
 	 * sorted per site.
 	 */
 	public void dump() {
-
+	    System.out.println("DUMP :");
 	}
 
 	/**
@@ -70,7 +123,7 @@ public class TransactionManager {
 	 * @param siteNum
 	 */
 	public void dump(int siteNum) {
-
+	    System.out.println("DUMP : siteNum = " + siteNum);
 	}
 
 	/**
