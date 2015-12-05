@@ -15,7 +15,7 @@ public class Site {
   private LockTable lockTable;
   
   public enum ServerStatus { 
-    UP, DOWN; 
+    UP, DOWN, RECOVERING;
   }
   
   private ServerStatus status; 

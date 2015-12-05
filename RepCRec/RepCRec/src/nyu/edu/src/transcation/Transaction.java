@@ -2,6 +2,7 @@ package nyu.edu.src.transcation;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import nyu.edu.src.store.Site;
@@ -18,7 +19,7 @@ public class Transaction {
 	private Set<Site> sitesAccessed;
 	private Status transactionStatus;
 	private Boolean isReadOnly;
-	private List<Variable> snapshotIfReadOnly;
+	private Map<String, Integer> snapshotIfReadOnly;
 
 	public Transaction(String id, int timeStamp, Boolean isReadOnly) {
 		this.ID = id;
@@ -47,12 +48,12 @@ public class Transaction {
 		return isReadOnly;
 	}
 
-	public List<Variable> getSnapshotIfReadOnly() {
+	public Map<String, Integer> getSnapshotIfReadOnly() {
 		return snapshotIfReadOnly;
 	}
 
-	public void setSnapshotIfReadOnly(List<Variable> snapshotIfReadOnly) {
-		this.snapshotIfReadOnly = snapshotIfReadOnly;
+	public void setSnapshotIfReadOnly(Map<String, Integer> map) {
+		this.snapshotIfReadOnly = map;
 	}
 
 	/**

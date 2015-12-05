@@ -1,9 +1,12 @@
 package nyu.edu.src.transcation;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import nyu.edu.src.store.Site;
+import nyu.edu.src.store.Site.ServerStatus;
 import nyu.edu.src.store.Variable;
 
 public class TransactionManager {
@@ -31,6 +34,7 @@ public class TransactionManager {
 		sites = new ArrayList<Site>();
 		for (int i = 1; i <= 10; i++) {
 			Site site = new Site(i);
+			site.setStatus(ServerStatus.UP);
 			sites.add(site);
 		}
 
@@ -76,7 +80,7 @@ public class TransactionManager {
 	public void begin(int timeStamp, String transactionID) {
 		System.out.println("BEGIN : timestamp = " + timeStamp
 				+ ", transaction = " + transactionID);
-		Transaction trans = new Transaction(transactionID, timeStamp,false);
+		Transaction trans = new Transaction(transactionID, timeStamp, false);
 		transactions.add(trans);
 	}
 
@@ -89,18 +93,45 @@ public class TransactionManager {
 	public void beginRO(int timeStamp, String transactionID) {
 		System.out.println("BEGINRO : timestamp = " + timeStamp
 				+ ", transaction = " + transactionID);
-		Transaction trans = new Transaction(transactionID, timeStamp,true);
+		Transaction trans = new Transaction(transactionID, timeStamp, true);
 		trans.setSnapshotIfReadOnly(takeSnapshot());
 		transactions.add(trans);
 	}
 
-	private List<Variable> takeSnapshot() {
-		// TODO Auto-generated method stub
-		return null;
+	// making public for testing
+	public Map<String, Integer> takeSnapshot() {
+		Map<String, Integer> snapshot = new HashMap<String, Integer>();
+
+		// adding even variables
+		for (int i = 0; i < 10; i = i + 2) {
+			if (sites.get(i).getStatus() == ServerStatus.UP) {
+				for (int var = 2; var <= 20; var = var + 2) {
+					snapshot.put("x" + var, sites.get(i).read(var));
+					/*System.out
+							.println("x" + var + " " + sites.get(i).read(var));*/
+				}
+				break;
+			}
+
+		}
+		//adding odd variables
+		for(int i=1;i<10;i=i+2) {
+			if(sites.get(i).getStatus() == ServerStatus.UP) {
+				snapshot.put("x"+i, sites.get(i).read(i));
+				snapshot.put("x"+(i+10), sites.get(i).read(i+10));
+				/*System.out
+				.println("x" + i + " " + sites.get(i).read(i));	
+				System.out
+				.println("x" + (i+10) + " " + sites.get(i).read(i+10));
+*/			}
+		}
+		//System.out.println(snapshot.size());
+		return snapshot;
 	}
 
 	/**
 	 * transaction ends
+	 * 
 	 * @param timestamp
 	 * @param transaction
 	 */
@@ -165,6 +196,15 @@ public class TransactionManager {
 	 */
 	public void dump() {
 		System.out.println("DUMP :");
+		for (int i = 0; i < 10; i++) {
+			if (sites.get(i).getStatus() == ServerStatus.UP) {
+				System.out.println(sites.get(i).getVariables());
+			} else if (sites.get(i).getStatus() == ServerStatus.DOWN) {
+				System.out.println("Server is down!");
+			} else {
+				// To DO serverstatus = Recovering
+			}
+		}
 	}
 
 	/**
@@ -174,8 +214,13 @@ public class TransactionManager {
 	 */
 	public void dump(int siteNum) {
 		System.out.println("DUMP : siteNum = " + siteNum);
-
-		System.out.println(sites.get(siteNum - 1).getVariables());
+		if (sites.get(siteNum - 1).getStatus() == ServerStatus.UP) {
+			System.out.println(sites.get(siteNum - 1).getVariables());
+		} else if (sites.get(siteNum - 1).getStatus() == ServerStatus.DOWN) {
+			System.out.println("Server is down!");
+		} else {
+			// To DO serverstatus = Recovering
+		}
 	}
 
 	/**
