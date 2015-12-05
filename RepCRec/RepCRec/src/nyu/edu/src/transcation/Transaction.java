@@ -26,6 +26,35 @@ public class Transaction {
 		this.isReadOnly = isReadOnly;
 		sitesAccessed = new HashSet<Site>();
 	}
+	
+	public String getID() {
+		return ID;
+	}
+
+	public int getTimeStamp() {
+		return timeStamp;
+	}
+
+	public Status getTransactionStatus() {
+		return transactionStatus;
+	}
+
+	public void setTransactionStatus(Status transactionStatus) {
+		this.transactionStatus = transactionStatus;
+	}
+
+	public Boolean getIsReadOnly() {
+		return isReadOnly;
+	}
+
+	public List<Variable> getSnapshotIfReadOnly() {
+		return snapshotIfReadOnly;
+	}
+
+	public void setSnapshotIfReadOnly(List<Variable> snapshotIfReadOnly) {
+		this.snapshotIfReadOnly = snapshotIfReadOnly;
+	}
+
 	/**
 	 * take appropriate action on commit
 	 */

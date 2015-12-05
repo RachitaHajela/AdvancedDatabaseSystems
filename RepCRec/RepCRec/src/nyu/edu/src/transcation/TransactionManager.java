@@ -73,9 +73,11 @@ public class TransactionManager {
 	 * @param timeStamp
 	 * @param transaction
 	 */
-	public void begin(int timestamp, String transaction) {
-		System.out.println("BEGIN : timestamp = " + timestamp
-				+ ", transaction = " + transaction);
+	public void begin(int timeStamp, String transactionID) {
+		System.out.println("BEGIN : timestamp = " + timeStamp
+				+ ", transaction = " + transactionID);
+		Transaction trans = new Transaction(transactionID, timeStamp,false);
+		transactions.add(trans);
 	}
 
 	/**
@@ -84,15 +86,22 @@ public class TransactionManager {
 	 * @param timeStamp
 	 * @param transaction
 	 */
-	public void beginRO(int timestamp, String transaction) {
-		System.out.println("BEGINRO : timestamp = " + timestamp
-				+ ", transaction = " + transaction);
+	public void beginRO(int timeStamp, String transactionID) {
+		System.out.println("BEGINRO : timestamp = " + timeStamp
+				+ ", transaction = " + transactionID);
+		Transaction trans = new Transaction(transactionID, timeStamp,true);
+		trans.setSnapshotIfReadOnly(takeSnapshot());
+		transactions.add(trans);
+	}
+
+	private List<Variable> takeSnapshot() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	/**
 	 * transaction ends
-	 * 
-	 * @param timeStamp
+	 * @param timestamp
 	 * @param transaction
 	 */
 	public void end(int timestamp, String transaction) {
