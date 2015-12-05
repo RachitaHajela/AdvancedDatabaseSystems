@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 
 import nyu.edu.src.store.Site;
 import nyu.edu.src.store.Site.ServerStatus;
 import nyu.edu.src.store.Variable;
+import nyu.edu.src.transcation.Transaction.Status;
+import nyu.edu.src.transcation.WaitOperation.OPERATION;
 
 public class TransactionManager {
 
@@ -15,8 +18,8 @@ public class TransactionManager {
 	public static final int numberOfTotalVariables = 20;
 
 	private List<Site> sites;
-	private List<Transaction> transactions;
-	private List<Transaction> waitingTransactions;
+	private Map<String, Transaction> transactionsMap;
+	private List<WaitOperation> waitingOperations; 
 	int currentTime = 1;
 
 	/**
@@ -49,6 +52,8 @@ public class TransactionManager {
 				}
 			}
 		}
+		transactionsMap = new HashMap<String, Transaction>();
+		waitingOperations = new ArrayList<WaitOperation>();
 	}
 
 	/**
@@ -81,7 +86,7 @@ public class TransactionManager {
 		System.out.println("BEGIN : timestamp = " + timeStamp
 				+ ", transaction = " + transactionID);
 		Transaction trans = new Transaction(transactionID, timeStamp, false);
-		transactions.add(trans);
+		transactionsMap.put(transactionID, trans);
 	}
 
 	/**
@@ -95,7 +100,7 @@ public class TransactionManager {
 				+ ", transaction = " + transactionID);
 		Transaction trans = new Transaction(transactionID, timeStamp, true);
 		trans.setSnapshotIfReadOnly(takeSnapshot());
-		transactions.add(trans);
+		transactionsMap.put(transactionID, trans);
 	}
 
 	// making public for testing
@@ -184,10 +189,38 @@ public class TransactionManager {
 	 * @param transaction
 	 * @param variable
 	 */
-	public void readRequest(int timestamp, String transaction, String variable) {
+	public void readRequest(int timestamp, String transactionID, String variable) {
 		System.out
 				.println("READ : timestamp = " + timestamp + ", transaction = "
-						+ transaction + ", variable = " + variable);
+						+ transactionID + ", variable = " + variable);
+		
+		Transaction transaction = transactionsMap.get(transactionID);
+		int varNum = Integer.parseInt(variable.substring(1));
+		
+		//if variable is odd
+		if(varNum%2 != 0) {
+			int siteNum = varNum%10;
+			Site site = sites.get(siteNum);
+			if(site.getStatus() == ServerStatus.UP) {
+				
+				if(site.isReadLockAvailable(variable)) {
+					site.getReadLock(transaction, variable);
+					System.out.println(transactionID + " reads "+variable+" value: "+site.read(variable));
+				}
+				
+				
+			}
+			else {
+				transaction.setTransactionStatus(Status.WAITING);
+				WaitOperation waitOperation = new WaitOperation(transaction, OPERATION.READ, variable);
+				waitingOperations.add(waitOperation);
+				
+			}
+		}else //variable is even
+		{
+			
+		}
+		
 	}
 
 	/**
@@ -219,7 +252,7 @@ public class TransactionManager {
 		} else if (sites.get(siteNum - 1).getStatus() == ServerStatus.DOWN) {
 			System.out.println("Server is down!");
 		} else {
-			// To DO serverstatus = Recovering
+			// TODO serverstatus = Recovering
 		}
 	}
 
