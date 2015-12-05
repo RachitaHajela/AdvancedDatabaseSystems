@@ -10,61 +10,62 @@ import nyu.edu.src.store.Variable;
 
 public class Transaction {
 
-	public enum Status {
-		RUNNING, WAITING, ABORTED, COMMITED
-	}
+    public enum Status {
+	RUNNING, WAITING, ABORTED, COMMITED
+    }
 
-	private String ID;
-	private int timeStamp;
-	private Set<Site> sitesAccessed;
-	private Status transactionStatus;
-	private Boolean isReadOnly;
-	private Map<String, Integer> snapshotIfReadOnly;
+    private String ID;
+    private int timeStamp;
+    private Set<Site> sitesAccessed;
+    private Status transactionStatus;
+    private Boolean isReadOnly;
+    private Map<String, Integer> snapshotIfReadOnly;
 
-	public Transaction(String id, int timeStamp, Boolean isReadOnly) {
-		this.ID = id;
-		this.timeStamp = timeStamp;
-		this.isReadOnly = isReadOnly;
-		sitesAccessed = new HashSet<Site>();
-	}
-	
-	public String getID() {
-		return ID;
-	}
+    public Transaction(String id, int timeStamp, Boolean isReadOnly) {
+	this.ID = id;
+	this.timeStamp = timeStamp;
+	this.isReadOnly = isReadOnly;
+	sitesAccessed = new HashSet<Site>();
+    }
 
-	public int getTimeStamp() {
-		return timeStamp;
-	}
+    public String getID() {
+	return ID;
+    }
 
-	public Status getTransactionStatus() {
-		return transactionStatus;
-	}
+    public int getTimeStamp() {
+	return timeStamp;
+    }
 
-	public void setTransactionStatus(Status transactionStatus) {
-		this.transactionStatus = transactionStatus;
-	}
+    public Status getTransactionStatus() {
+	return transactionStatus;
+    }
 
-	public Boolean getIsReadOnly() {
-		return isReadOnly;
-	}
+    public void setTransactionStatus(Status transactionStatus) {
+	this.transactionStatus = transactionStatus;
+    }
 
-	public Map<String, Integer> getSnapshotIfReadOnly() {
-		return snapshotIfReadOnly;
-	}
+    public Boolean getIsReadOnly() {
+	return isReadOnly;
+    }
 
-	public void setSnapshotIfReadOnly(Map<String, Integer> map) {
-		this.snapshotIfReadOnly = map;
-	}
+    public Map<String, Integer> getSnapshotIfReadOnly() {
+	return snapshotIfReadOnly;
+    }
 
-	/**
-	 * take appropriate action on commit
-	 */
-	public void commit() {
-		
-	}
-	
-	/**
-	 * take appropriate action on abort
-	 */
-	public void abort() {}
+    public void setSnapshotIfReadOnly(Map<String, Integer> map) {
+	this.snapshotIfReadOnly = map;
+    }
+
+    /**
+     * take appropriate action on commit
+     */
+    public void commit() {
+
+    }
+
+    /**
+     * take appropriate action on abort
+     */
+    public void abort() {
+    }
 }
