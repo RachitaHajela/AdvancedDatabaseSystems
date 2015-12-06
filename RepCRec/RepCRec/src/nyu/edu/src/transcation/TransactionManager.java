@@ -210,6 +210,17 @@ public class TransactionManager {
 					System.out.println(transactionID + " reads " + variable
 							+ " value: " + site.read(variable));
 				}
+				else {
+					if(site.transactionWaits(transaction,variable)) {
+						WaitOperation waitOperation = new WaitOperation(transaction,
+								OPERATION.READ, variable);
+						waitingOperations.add(waitOperation);
+					}
+					else {
+						transaction.setTransactionStatus(Status.ABORTED);
+						System.out.println("Transaction "+transactionID +" Aborted!");
+					}
+				}
 
 			} else {
 				transaction.setTransactionStatus(Status.WAITING);
@@ -219,8 +230,25 @@ public class TransactionManager {
 
 			}
 		} else // variable is even
-		{
-
+		{	Boolean valueRead = false;
+			for(int i=0;i<10;i++) {
+				Site site = sites.get(i);
+				if(site.getStatus() == ServerStatus.UP) {
+					if (site.isReadLockAvailable(variable)) {
+						site.getReadLock(transaction, variable);
+						System.out.println(transactionID + " reads " + variable
+								+ " value: " + site.read(variable));
+						valueRead = true;
+						break;
+					}
+				}
+			}
+			if(!valueRead) {
+				//if all servers are down wait. if write lock check do i wait?
+				WaitOperation waitOperation = new WaitOperation(transaction,
+						OPERATION.READ, variable);
+				waitingOperations.add(waitOperation);
+			}
 		}
 
 	}

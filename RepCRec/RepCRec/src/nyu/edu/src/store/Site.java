@@ -176,4 +176,9 @@ public class Site {
 		}
 	}
 
+	public boolean transactionWaits(Transaction transaction, String variable) {
+		
+		return false;
+	}
+
 }
