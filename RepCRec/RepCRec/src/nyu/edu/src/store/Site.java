@@ -1,10 +1,12 @@
 package nyu.edu.src.store;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import nyu.edu.src.lock.Lock;
-import nyu.edu.src.lock.LockTable;
+import nyu.edu.src.lock.Lock.LockType;
+import nyu.edu.src.transcation.Transaction;
 import nyu.edu.src.transcation.TransactionManager;
 
 public class Site {
@@ -12,8 +14,11 @@ public class Site {
     private int id;
     private Map<Integer, Variable> variables;
     private Map<Integer, Variable> uncommittedVariables;
-    private LockTable lockTable;
+   // private LockTable lockTable;
+    private Map<String, ArrayList<Lock>> lockTable;
+    private int previousFailtime;
 
+    
     public enum ServerStatus {
 	UP, DOWN, RECOVERING;
     }
@@ -24,10 +29,14 @@ public class Site {
 	this.id = id;
 	variables = new HashMap<Integer, Variable>();
 	uncommittedVariables = new HashMap<Integer, Variable>();
-	lockTable = new LockTable();
+	lockTable = new HashMap<String, ArrayList<Lock>>();
 	status = ServerStatus.UP;
     }
 
+    public int getPreviousFailtime() {
+        return this.previousFailtime;
+    }
+    
     public int getId() {
 	return id;
     }
@@ -52,12 +61,13 @@ public class Site {
 	return variables.containsKey(id);
     }
 
-    public void failure() {
-	status = ServerStatus.DOWN;
+    public void failure(int timestamp) {
+        status = ServerStatus.DOWN;
+        previousFailtime = timestamp;
     }
 
     public void recover() {
-	status = ServerStatus.UP;
+	status = ServerStatus.RECOVERING;
     }
 
     public String getVariables() {
@@ -125,9 +135,49 @@ public class Site {
 	if (id.startsWith("x")) {
 	    int idWithoutX = Integer.parseInt(id.substring(1));
 	    return idWithoutX;
+	    }
+	// ID was not properly provided (not in the form x1, x2, ..., x20)
+			return -1;
 	}
 
-	// ID was not properly provided (not in the form x1, x2, ..., x20)
-	return -1;
-    }
+
+	public boolean transactionWaits(Transaction transaction, String variable) {
+		ArrayList<Lock> locks = lockTable.get(variable);
+		Transaction transHoldingLock = locks.get(0).getTransaction();
+		if(transHoldingLock.getTimeStamp()<transaction.getTimeStamp()){
+			return false;
+		}
+		return true;
+	}
+
+	public boolean isReadLockAvailable(String variable) {
+		if (!lockTable.containsKey(variable)) {
+			return true;
+		} else {
+			ArrayList<Lock> locks = lockTable.get(variable);
+			if (locks.get(0).getType() == LockType.READ) { // if the locks are
+															// read locks give
+															// it
+				return true;
+			} else {
+				return false;
+			}
+		}
+	}
+	
+	public void getReadLock(Transaction trans,String variable) {
+		if(lockTable.containsKey(variable)) {
+			Lock lock = new Lock(trans,LockType.READ);
+			ArrayList<Lock> locks = lockTable.get(variable);
+			locks.add(lock);
+			lockTable.put(variable, locks);
+		}
+		else {
+			Lock lock = new Lock(trans,LockType.READ);
+			ArrayList<Lock> locks = new ArrayList<Lock>();
+			locks.add(lock);
+			lockTable.put(variable, locks);
+		}
+	}
+
 }

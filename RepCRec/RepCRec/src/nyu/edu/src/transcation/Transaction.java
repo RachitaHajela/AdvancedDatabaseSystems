@@ -56,7 +56,15 @@ public class Transaction {
 	this.snapshotIfReadOnly = map;
     }
 
-    /**
+    public Set<Site> getSitesAccessed() {
+		return sitesAccessed;
+	}
+
+	public void addToSitesAccessed(Site siteAccessed) {
+		this.sitesAccessed.add(siteAccessed);
+	}
+
+	/**
      * take appropriate action on commit
      */
     public void commit() {
