@@ -149,7 +149,7 @@ public class Site {
 		}
 		return true;
 	}
-
+//TODO recovery code
 	public boolean isReadLockAvailable(String variable) {
 		if (!lockTable.containsKey(variable)) {
 			return true;

@@ -274,8 +274,14 @@ public class TransactionManager {
 
 	private void writeRequestEvenVariable(int timestamp,
 			Transaction transaction, String variable, int value) {
+		boolean allLocksAcquired = true;
 		
-		
+		for(int i=0;i<10;i++) {
+			Site site = sites.get(i);
+			if(site.getStatus() == ServerStatus.UP || site.getStatus() == ServerStatus.RECOVERING) {
+				
+			}
+		}
 	}
 
 	/**
