@@ -2,9 +2,13 @@ package nyu.edu.src.transcation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
+
+import javax.swing.text.html.HTMLDocument.Iterator;
 
 import nyu.edu.src.store.Site;
 import nyu.edu.src.store.Site.ServerStatus;
@@ -134,14 +138,26 @@ public class TransactionManager {
 	 * @param transaction
 	 */
 	public void end(int timestamp, String transactionID) {
-		System.out.println("END : timestamp = " + timestamp
-				+ ", transaction = " + transactionID);
 		
 		Transaction transaction = transactionsMap.get(transactionID);
 	    if( transaction == null ) {
 	      System.out.println("Incorrect transaction name "
 	              + "or transaction has already ended");
 	      return;
+	    }
+	    
+	    HashSet<Site> setOfSitesAccessed = transaction.getSitesAccessed();
+	    
+	    if (!transaction.getIsReadOnly()) {
+    	    int transactionTimestamp = transaction.getTimeStamp();
+    	    for (Site s : setOfSitesAccessed) {
+    	        if(transactionTimestamp <= s.getPreviousFailtime() || s.getStatus().compareTo(ServerStatus.DOWN) == 0) {
+    	            System.out.println("Transcation " + transactionID + " aborted because Site " + s.getId() + " was down!");
+    	            transaction.abort(timestamp);
+    	            clearLocksAndUnblock(timestamp, transaction);
+    	            return;
+    	        }
+    	    }
 	    }
 	    
 	    if( transaction.commit() ) {
@@ -151,11 +167,12 @@ public class TransactionManager {
 	        System.out.println("Transcation " + transactionID + " aborted");
 	        transaction.abort(timestamp);
 	    }
-	    clearLocksAndUnblock(transaction, timestamp);
+	    clearLocksAndUnblock(timestamp, transaction);
 	}
 	
-	public void clearLocksAndUnblock(Transaction transaction, int timestamp) {
+	public void clearLocksAndUnblock(int timestamp, Transaction transaction) {
 	    
+	    transactionsMap.remove(transaction.getID());
 	}
 	
 	/**
@@ -212,9 +229,9 @@ public class TransactionManager {
 	 * @param variable
 	 */
 	public void readRequest(int timestamp, String transactionID, String variable) {
-		System.out
-				.println("READ : timestamp = " + timestamp + ", transaction = "
-						+ transactionID + ", variable = " + variable);
+		System.out.println("READ : timestamp = " + timestamp + 
+		        ", transaction = " + transactionID + ", variable = " + 
+		        variable);
 		
 		Transaction transaction = transactionsMap.get(transactionID);
 		int varNum = Integer.parseInt(variable.substring(1));
