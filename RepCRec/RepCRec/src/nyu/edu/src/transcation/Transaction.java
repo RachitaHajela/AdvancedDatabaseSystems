@@ -2,12 +2,10 @@ package nyu.edu.src.transcation;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import nyu.edu.src.store.Site;
-import nyu.edu.src.store.Variable;
 
 public class Transaction {
 
@@ -21,12 +19,14 @@ public class Transaction {
     private Status transactionStatus;
     private Boolean isReadOnly;
     private Map<String, Integer> snapshotIfReadOnly;
+    private Map<String, Integer> uncommittedVariables;
 
     public Transaction(String id, int timeStamp, Boolean isReadOnly) {
 	this.ID = id;
 	this.timeStamp = timeStamp;
 	this.isReadOnly = isReadOnly;
 	sitesAccessed = new HashSet<Site>();
+	uncommittedVariables = new HashMap<String, Integer>();
     }
 
     public String getID() {
@@ -63,6 +63,10 @@ public class Transaction {
 
 	public void addToSitesAccessed(Site siteAccessed) {
 		this.sitesAccessed.add(siteAccessed);
+	}
+	
+	public void addToUncommitedVariables(String var,int value) {
+		this.uncommittedVariables.put(var, value);
 	}
 
 	/**

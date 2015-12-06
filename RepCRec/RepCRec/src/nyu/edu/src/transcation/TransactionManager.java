@@ -2,13 +2,9 @@ package nyu.edu.src.transcation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.Set;
-
-import javax.swing.text.html.HTMLDocument.Iterator;
 
 import nyu.edu.src.store.Site;
 import nyu.edu.src.store.Site.ServerStatus;
@@ -78,6 +74,7 @@ public class TransactionManager {
 	public void commitRequest(Transaction transaction, int timestamp) {
 		System.out.println("COMMIT : timestamp = " + timestamp
 				+ ", transaction = " + transaction);
+		//TODO commit all uncommited variable list
 	}
 
 	/**
@@ -163,7 +160,8 @@ public class TransactionManager {
     	            return;
     	        }
     	    }
-    	    System.out.println("Transcation " + transactionID + " commits");  
+    	    System.out.println("Transcation " + transactionID + " commits"); 
+    	    commitRequest(transaction, transactionTimestamp);
     	    transaction.commit(timestamp);
 	    }
 	    
@@ -217,12 +215,67 @@ public class TransactionManager {
 	 * @param variable
 	 * @param val
 	 */
-	public void writeRequest(int timestamp, String transaction,
+	public void writeRequest(int timestamp, String transactionID,
 			String variable, String val) {
 		int value = Integer.parseInt(val);
 		System.out.println("WRITE : timestamp = " + timestamp
-				+ ", transaction = " + transaction + ", variable = " + variable
+				+ ", transaction = " + transactionID + ", variable = " + variable
 				+ ", value = " + value);
+		
+		Transaction transaction = transactionsMap.get(transactionID);
+		int varNum = Integer.parseInt(variable.substring(1));
+		
+		//if variable is odd
+				if(varNum%2 != 0) {
+					int siteNum = varNum%10;
+					Site site = sites.get(siteNum);
+					if(site.getStatus() == ServerStatus.UP || site.getStatus() == ServerStatus.RECOVERING) { 
+						//take lock if not then wait or die
+						if(site.isWriteLockAvailable(transaction,variable)) {
+							site.getWriteLock(transaction,variable);
+							transaction.setTransactionStatus(Status.RUNNING);
+							transaction.addToSitesAccessed(site);
+							transaction.addToUncommitedVariables(variable, value);
+							System.out.println("lock taken");
+						}
+						else {  //lock not available
+							if(site.transactionWaits(transaction,variable)) {
+								transaction.setTransactionStatus(Status.WAITING);
+								WaitOperation waitOperation = new WaitOperation(transaction,
+										OPERATION.READ, variable,site);
+								waitingOperations.add(waitOperation);
+								System.out.println("waiting");
+							}
+							else {
+								transaction.setTransactionStatus(Status.ABORTED);
+								System.out.println("Transaction "+transactionID +" Aborted!");
+								clearLocksAndUnblock(timestamp, transaction);
+								System.out.println("aborted");
+							}
+							
+						}
+						
+						
+					}
+					else { //the site is down. It waits
+						transaction.setTransactionStatus(Status.WAITING);
+						WaitOperation waitOperation = new WaitOperation(transaction,
+								OPERATION.WRITE, variable,site);
+						waitingOperations.add(waitOperation);
+					}
+				}
+				//variable is even
+				else {
+					writeRequestEvenVariable(timestamp, transaction,
+							variable, value);
+				}
+	}
+
+
+	private void writeRequestEvenVariable(int timestamp,
+			Transaction transaction, String variable, int value) {
+		
+		
 	}
 
 	/**
@@ -254,6 +307,7 @@ public class TransactionManager {
 				if(site.isReadLockAvailable(variable)) {
 					site.getReadLock(transaction, variable);
 					System.out.println(transactionID + " reads "+variable+" value: "+site.read(variable));
+					transaction.setTransactionStatus(Status.RUNNING);
 					transaction.addToSitesAccessed(site);
 				}
 				else {
@@ -266,6 +320,7 @@ public class TransactionManager {
 					else {
 						transaction.setTransactionStatus(Status.ABORTED);
 						System.out.println("Transaction "+transactionID +" Aborted!");
+						clearLocksAndUnblock(timestamp, transaction);
 					}
 				}
 				

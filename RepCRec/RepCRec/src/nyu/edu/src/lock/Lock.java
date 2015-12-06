@@ -26,4 +26,8 @@ public class Lock {
 		return type;
 	}
 
+	public void setType(LockType type) {
+		this.type = type;
+	}
+
 }
