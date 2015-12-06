@@ -149,13 +149,8 @@ public class TransactionManager {
      * @param siteID
      */
     public void fail(int timestamp, int siteID) {
-        Site site = sites.get(siteID);
-        
-        if( site != null) {
-            System.out.println("FAIL : timestamp = " + timestamp + ", siteID = "
-                    + siteID);
-            site.failure(timestamp);
-        }
+	System.out.println("FAIL : timestamp = " + timestamp + ", siteID = "
+		+ siteID);
     }
 
     /**
@@ -165,11 +160,7 @@ public class TransactionManager {
      * @param siteID
      */
     public void recover(int siteID) {
-        Site site = sites.get(siteID);
-        if( site != null) {
-            System.out.println("RECOVER : siteID = " + siteID);
-            site.recover();
-        }
+	System.out.println("RECOVER : siteID = " + siteID);
     }
 
     /**
