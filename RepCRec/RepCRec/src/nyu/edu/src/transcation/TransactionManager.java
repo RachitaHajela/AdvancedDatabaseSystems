@@ -146,25 +146,34 @@ public class TransactionManager {
 	}
 
 	/**
-	 * site fails
-	 * 
-	 * @param timeStamp
-	 * @param siteID
-	 */
-	public void fail(int timestamp, int siteID) {
-		System.out.println("FAIL : timestamp = " + timestamp + ", siteID = "
-				+ siteID);
-	}
+     * site fails
+     * 
+     * @param timeStamp
+     * @param siteID
+     */
+    public void fail(int timestamp, int siteID) {
+        Site site = sites.get(siteID);
+        
+        if( site != null) {
+            System.out.println("FAIL : timestamp = " + timestamp + ", siteID = "
+                    + siteID);
+            site.failure(timestamp);
+        }
+    }
 
 	/**
-	 * site recovers
-	 * 
-	 * @param timeStamp
-	 * @param siteID
-	 */
-	public void recover(int siteID) {
-		System.out.println("RECOVER : siteID = " + siteID);
-	}
+     * site recovers
+     * 
+     * @param timeStamp
+     * @param siteID
+     */
+    public void recover(int siteID) {
+        Site site = sites.get(siteID);
+        if( site != null) {
+            System.out.println("RECOVER : siteID = " + siteID);
+            site.recover();
+        }
+    }
 
 	/**
 	 * transaction makes a write request
@@ -286,11 +295,25 @@ public class TransactionManager {
 	}
 
 	/**
-	 * gives the committed values of all copies of variable var at all sites.
-	 * 
-	 * @param var
-	 */
-	public void dump(String var) {
+     * gives the committed values of all copies of variable var at all sites.
+     * 
+     * @param var
+     */
+    public void dump(String var) {
+	int variableID = Integer.parseInt(var.substring(1));
 
+	for (Site s : sites) {
+	    if (s.getStatus() == ServerStatus.UP) {
+		String val = s.getVariable(variableID);
+		if (!val.equalsIgnoreCase("ignore")) {
+		    System.out.println("SITE " + s.getId() + " : "
+			    + s.getVariable(variableID));
+		}
+	    } else if (s.getStatus() == ServerStatus.DOWN) {
+		System.out.println("Server is Down!");
+	    } else {
+		// TODO serverstatus = Recovering
+	    }
 	}
+    }
 }

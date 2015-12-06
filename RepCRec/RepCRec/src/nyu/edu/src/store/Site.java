@@ -16,6 +16,8 @@ public class Site {
     private Map<Integer, Variable> uncommittedVariables;
    // private LockTable lockTable;
     private Map<String, ArrayList<Lock>> lockTable;
+    private int previousFailtime;
+
     
     public enum ServerStatus {
 	UP, DOWN, RECOVERING;
@@ -31,6 +33,10 @@ public class Site {
 	status = ServerStatus.UP;
     }
 
+    public int getPreviousFailtime() {
+        return this.previousFailtime;
+    }
+    
     public int getId() {
 	return id;
     }
@@ -55,12 +61,13 @@ public class Site {
 	return variables.containsKey(id);
     }
 
-    public void failure() {
-	status = ServerStatus.DOWN;
+    public void failure(int timestamp) {
+        status = ServerStatus.DOWN;
+        previousFailtime = timestamp;
     }
 
     public void recover() {
-	status = ServerStatus.UP;
+	status = ServerStatus.RECOVERING;
     }
 
     public String getVariables() {
