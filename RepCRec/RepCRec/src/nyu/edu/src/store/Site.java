@@ -30,7 +30,11 @@ public class Site {
 	lockTable = new HashMap<String, ArrayList<Lock>>();
 	status = ServerStatus.UP;
     }
-
+    
+    public Map<String, ArrayList<Lock>> getLockTable() {
+        return this.lockTable;
+    }
+    
     public int getPreviousFailtime() {
         return this.previousFailtime;
     }

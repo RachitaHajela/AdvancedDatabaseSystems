@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import nyu.edu.src.lock.Lock;
 import nyu.edu.src.store.Site;
 import nyu.edu.src.store.Site.ServerStatus;
 import nyu.edu.src.store.Variable;
@@ -186,8 +187,22 @@ public class TransactionManager {
 	}
 	
 	public void clearLocksAndUnblock(int timestamp, Transaction transaction) {
-	    
 	    transactionsMap.remove(transaction.getID());
+	    
+	    for(Site s : sites) {
+	        Map<String, ArrayList<Lock>> siteLockTable = s.getLockTable();
+	        for(String variable : siteLockTable.keySet()) {
+	            ArrayList<Lock> lockArrayList = siteLockTable.get(variable);
+	            for(Lock lock : lockArrayList) {
+	                if(lock.getTransaction().equals(transaction)) {
+	                    lockArrayList.remove(lock);
+	                }
+	            }
+	            if(lockArrayList.size() == 0) {
+	                siteLockTable.remove(variable);
+	            }
+	        }
+	    }
 	}
 	
 	/**
