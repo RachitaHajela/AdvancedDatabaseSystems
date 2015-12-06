@@ -1,5 +1,6 @@
 package nyu.edu.src.transcation;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -48,8 +49,8 @@ public class Transaction {
 	return isReadOnly;
     }
 
-    public Map<String, Integer> getSnapshotIfReadOnly() {
-	return snapshotIfReadOnly;
+    public HashMap<String, Integer> getSnapshotIfReadOnly() {
+        return (HashMap<String, Integer>) snapshotIfReadOnly;
     }
 
     public void setSnapshotIfReadOnly(Map<String, Integer> map) {

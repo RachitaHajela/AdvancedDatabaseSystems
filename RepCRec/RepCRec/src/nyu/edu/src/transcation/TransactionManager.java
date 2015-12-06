@@ -146,7 +146,7 @@ public class TransactionManager {
 	      return;
 	    }
 	    
-	    HashSet<Site> setOfSitesAccessed = transaction.getSitesAccessed();
+	    Set<Site> setOfSitesAccessed = transaction.getSitesAccessed();
 	    
 	    if (!transaction.getIsReadOnly()) {
     	    int transactionTimestamp = transaction.getTimeStamp();
@@ -236,6 +236,11 @@ public class TransactionManager {
 		Transaction transaction = transactionsMap.get(transactionID);
 		int varNum = Integer.parseInt(variable.substring(1));
 		
+		if(transaction.getIsReadOnly()) {
+		    readOnlyRequest(transaction,variable);
+		    return;
+		}
+		
 		//if variable is odd
 		if(varNum%2 != 0) {
 			int siteNum = varNum%10;
@@ -293,7 +298,18 @@ public class TransactionManager {
 		}
 		
 	}
-
+	
+	private void readOnlyRequest(Transaction transaction, String var) {
+	    HashMap<String, Integer> snapshot = transaction.getSnapshotIfReadOnly();
+	    if(snapshot.containsKey(var)) {
+	        System.out.println(transaction.getID() + " reads " + var
+	                + " value: " + snapshot.get(var));
+	    }
+	    else {
+	        //what to do if server was down at the time transaction began?
+	    }           
+	}
+	
 	/**
 	 * gives the committed values of all copies of all variables at all sites,
 	 * sorted per site.
