@@ -142,8 +142,12 @@ public class Site {
 
 
 	public boolean transactionWaits(Transaction transaction, String variable) {
-		
-		return false;
+		ArrayList<Lock> locks = lockTable.get(variable);
+		Transaction transHoldingLock = locks.get(0).getTransaction();
+		if(transHoldingLock.getTimeStamp()<transaction.getTimeStamp()){
+			return false;
+		}
+		return true;
 	}
 
 	public boolean isReadLockAvailable(String variable) {

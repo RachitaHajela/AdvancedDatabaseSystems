@@ -152,7 +152,7 @@ public class TransactionManager {
      * @param siteID
      */
     public void fail(int timestamp, int siteID) {
-        Site site = sites.get(siteID);
+        Site site = sites.get(siteID-1);
         
         if( site != null) {
             System.out.println("FAIL : timestamp = " + timestamp + ", siteID = "
@@ -215,9 +215,11 @@ public class TransactionManager {
 				if(site.isReadLockAvailable(variable)) {
 					site.getReadLock(transaction, variable);
 					System.out.println(transactionID + " reads "+variable+" value: "+site.read(variable));
+					transaction.addToSitesAccessed(site);
 				}
 				else {
 					if(site.transactionWaits(transaction,variable)) {
+						transaction.setTransactionStatus(Status.WAITING);
 						WaitOperation waitOperation = new WaitOperation(transaction,
 								OPERATION.READ, variable);
 						waitingOperations.add(waitOperation);
@@ -246,6 +248,7 @@ public class TransactionManager {
 					System.out.println(transactionID + " reads " + variable
 							+ " value: " + site.read(variable));
 					valueRead = true;
+					transaction.addToSitesAccessed(site);
 					break;
 				}
 			}
