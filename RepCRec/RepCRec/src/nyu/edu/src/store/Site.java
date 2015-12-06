@@ -149,7 +149,7 @@ public class Site {
 		}
 		return true;
 	}
-
+//TODO recovery code
 	public boolean isReadLockAvailable(String variable) {
 		if (!lockTable.containsKey(variable)) {
 			return true;
@@ -178,6 +178,33 @@ public class Site {
 			locks.add(lock);
 			lockTable.put(variable, locks);
 		}
+	}
+
+	public boolean isWriteLockAvailable(Transaction transaction, String variable) {
+		if(!lockTable.containsKey(variable)) {
+			return true;
+		}
+		if(lockTable.get(variable).size()==1) {
+			Lock lock = lockTable.get(variable).get(0);
+			if(lock.getTransaction().equals(transaction)) {   //there is only one lock and the same transaction holds it.
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public void getWriteLock(Transaction transaction, String variable) {
+		if(!lockTable.containsKey(variable)) {
+			Lock lock = new Lock(transaction,LockType.WRITE);
+			ArrayList<Lock> locks = new ArrayList<Lock>();
+			locks.add(lock);
+			lockTable.put(variable, locks);
+		}
+		else {
+			Lock lock = lockTable.get(variable).get(0);
+			lock.setType(LockType.WRITE);    //convert read lock for the transaction to write lock
+		}
+		
 	}
 
 }
