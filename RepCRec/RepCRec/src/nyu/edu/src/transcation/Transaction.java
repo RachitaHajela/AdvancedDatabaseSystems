@@ -69,14 +69,15 @@ public class Transaction {
      * take appropriate action on commit
 	 * @return 
      */
-    public boolean commit() {
-        return false;
+    public void commit(int timestamp) {
+    	this.transactionStatus = Status.COMMITED;
     }
 
     /**
      * take appropriate action on abort
      * @param timestamp2 
      */
-    public void abort(int timestamp2) {
+    public void abort(int timestamp) {
+    	this.transactionStatus = Status.ABORTED;
     }
 }

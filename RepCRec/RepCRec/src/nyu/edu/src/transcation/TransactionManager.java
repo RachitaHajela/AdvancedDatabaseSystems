@@ -146,6 +146,11 @@ public class TransactionManager {
 	      return;
 	    }
 	    
+	    if(transaction.getTransactionStatus() == Status.ABORTED) {
+	    	System.out.println("Transcation " + transactionID + " already aborted");
+	    	return;
+	    }
+	    
 	    Set<Site> setOfSitesAccessed = transaction.getSitesAccessed();
 	    
 	    if (!transaction.getIsReadOnly()) {
@@ -154,20 +159,19 @@ public class TransactionManager {
     	        if(transactionTimestamp <= s.getPreviousFailtime() || s.getStatus().compareTo(ServerStatus.DOWN) == 0) {
     	            System.out.println("Transcation " + transactionID + " aborted because Site " + s.getId() + " was down!");
     	            transaction.abort(timestamp);
-    	            clearLocksAndUnblock(timestamp, transaction);
+    	            clearLocksAndUnblock(timestamp, transaction); 
     	            return;
     	        }
     	    }
+    	    System.out.println("Transcation " + transactionID + " commits");  
+    	    transaction.commit(timestamp);
 	    }
 	    
-	    if( transaction.commit() ) {
-	        System.out.println("Transcation " + transactionID + " ended");
-	    }
 	    else {
-	        System.out.println("Transcation " + transactionID + " aborted");
-	        transaction.abort(timestamp);
+	        System.out.println("Transcation " + transactionID + " commits");
+	        transaction.commit(timestamp);
 	    }
-	    clearLocksAndUnblock(timestamp, transaction);
+	    clearLocksAndUnblock(timestamp, transaction); 
 	}
 	
 	public void clearLocksAndUnblock(int timestamp, Transaction transaction) {
@@ -322,7 +326,7 @@ public class TransactionManager {
 			} else if (sites.get(i).getStatus() == ServerStatus.DOWN) {
 				System.out.println("Server is down!");
 			} else {
-				// To DO serverstatus = Recovering
+				// TODO serverstatus = Recovering
 			}
 		}
 	}
