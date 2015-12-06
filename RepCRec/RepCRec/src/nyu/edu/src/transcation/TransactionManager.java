@@ -292,8 +292,31 @@ public class TransactionManager {
 		for(int i=0;i<10;i++) {
 			Site site = sites.get(i);
 			if(site.getStatus() == ServerStatus.UP || site.getStatus() == ServerStatus.RECOVERING) {
-				
-			}
+			    //if lock can be taken 
+			    if(site.isWriteLockAvailable(transaction, variable)) {
+			        site.getWriteLock(transaction, variable);
+			        transaction.addToSitesAccessed(site);
+			    }
+			    else { //either the transaction waits or gets aborted
+			        if(site.transactionWaits(transaction,variable)) {
+			            transaction.setTransactionStatus(Status.WAITING);
+			            WaitOperation waitOperation = new WaitOperation(transaction,
+			                    OPERATION.WRITE, variable,site);
+			            waitingOperations.add(waitOperation);
+			            allLocksAcquired = false;
+			        }
+			        else {
+			            transaction.setTransactionStatus(Status.ABORTED);
+			            System.out.println("Transaction "+transaction.getID() +" Aborted!");
+			            clearLocksAndUnblock(timestamp, transaction);
+			            return;
+			        }       
+			    }
+			}	
+		}
+		
+		if(allLocksAcquired) {
+		    transaction.addToUncommitedVariables(variable, value);
 		}
 	}
 
@@ -340,6 +363,7 @@ public class TransactionManager {
 						transaction.setTransactionStatus(Status.ABORTED);
 						System.out.println("Transaction "+transactionID +" Aborted!");
 						clearLocksAndUnblock(timestamp, transaction);
+						return;
 					}
 				}
 				

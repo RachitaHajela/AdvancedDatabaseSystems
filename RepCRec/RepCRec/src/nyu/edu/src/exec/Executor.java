@@ -14,7 +14,7 @@ public class Executor {
 		this.inputFile = inputFile;
 		transactionManager = new TransactionManager();
 		transactionManager.setUp();
-		transactionManager.dump("x2");
+		//transactionManager.dump("x2");
 	}
 
 	public void readFromInput() {
