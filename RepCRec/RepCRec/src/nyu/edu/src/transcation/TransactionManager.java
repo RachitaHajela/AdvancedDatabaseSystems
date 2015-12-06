@@ -112,8 +112,6 @@ public class TransactionManager {
 			if (sites.get(i).getStatus() == ServerStatus.UP) {
 				for (int var = 2; var <= 20; var = var + 2) {
 					snapshot.put("x" + var, sites.get(i).read(var));
-					/*System.out
-							.println("x" + var + " " + sites.get(i).read(var));*/
 				}
 				break;
 			}
@@ -124,13 +122,8 @@ public class TransactionManager {
 			if(sites.get(i).getStatus() == ServerStatus.UP) {
 				snapshot.put("x"+i, sites.get(i).read(i));
 				snapshot.put("x"+(i+10), sites.get(i).read(i+10));
-				/*System.out
-				.println("x" + i + " " + sites.get(i).read(i));	
-				System.out
-				.println("x" + (i+10) + " " + sites.get(i).read(i+10));
-*/			}
+			}
 		}
-		//System.out.println(snapshot.size());
 		return snapshot;
 	}
 
@@ -140,11 +133,31 @@ public class TransactionManager {
 	 * @param timestamp
 	 * @param transaction
 	 */
-	public void end(int timestamp, String transaction) {
+	public void end(int timestamp, String transactionID) {
 		System.out.println("END : timestamp = " + timestamp
-				+ ", transaction = " + transaction);
+				+ ", transaction = " + transactionID);
+		
+		Transaction transaction = transactionsMap.get(transactionID);
+	    if( transaction == null ) {
+	      System.out.println("Incorrect transaction name "
+	              + "or transaction has already ended");
+	      return;
+	    }
+	    
+	    if( transaction.commit() ) {
+	        System.out.println("Transcation " + transactionID + " ended");
+	    }
+	    else {
+	        System.out.println("Transcation " + transactionID + " aborted");
+	        transaction.abort(timestamp);
+	    }
+	    clearLocksAndUnblock(transaction, timestamp);
 	}
-
+	
+	public void clearLocksAndUnblock(Transaction transaction, int timestamp) {
+	    
+	}
+	
 	/**
      * site fails
      * 

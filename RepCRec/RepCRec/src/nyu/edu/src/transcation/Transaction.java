@@ -66,14 +66,16 @@ public class Transaction {
 
 	/**
      * take appropriate action on commit
+	 * @return 
      */
-    public void commit() {
-
+    public boolean commit() {
+        return false;
     }
 
     /**
      * take appropriate action on abort
+     * @param timestamp2 
      */
-    public void abort() {
+    public void abort(int timestamp2) {
     }
 }
