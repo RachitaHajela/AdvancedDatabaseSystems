@@ -2,7 +2,7 @@ package nyu.edu.src.store;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
 
 import nyu.edu.src.lock.Lock;
 import nyu.edu.src.lock.Lock.LockType;
@@ -12,9 +12,9 @@ import nyu.edu.src.transcation.TransactionManager;
 public class Site {
 
     private int id;
-    private Map<Integer, Variable> variables;
-   // private LockTable lockTable;
-    private Map<String, ArrayList<Lock>> lockTable;
+    private HashMap<Integer, Variable> variables;
+    private HashMap<String, ArrayList<Lock>> lockTable;
+    private HashSet<String> variableHasRecovered;
     private int previousFailtime;
 
     
@@ -25,13 +25,18 @@ public class Site {
     private ServerStatus status;
 
     public Site(int id) {
-	this.id = id;
-	variables = new HashMap<Integer, Variable>();
-	lockTable = new HashMap<String, ArrayList<Lock>>();
-	status = ServerStatus.UP;
+    	this.id = id;
+    	variables = new HashMap<Integer, Variable>();
+    	lockTable = new HashMap<String, ArrayList<Lock>>();
+    	variableHasRecovered = new HashSet<String>();
+    	if(id % 2 == 0) {
+        	variableHasRecovered.add("x" + (id - 1));
+        	variableHasRecovered.add("x" + (id - 1 + 10));
+    	}
+    	status = ServerStatus.UP;
     }
     
-    public Map<String, ArrayList<Lock>> getLockTable() {
+    public HashMap<String, ArrayList<Lock>> getLockTable() {
         return this.lockTable;
     }
     
@@ -69,11 +74,19 @@ public class Site {
 
     public void failure(int timestamp) {
         status = ServerStatus.DOWN;
+        lockTable.clear();
+        variableHasRecovered.clear();
         previousFailtime = timestamp;
     }
 
     public void recover() {
-	status = ServerStatus.RECOVERING;
+        int id = this.getId();
+        if(id % 2 == 0) {
+            variableHasRecovered.add("x" + (id - 1));
+            variableHasRecovered.add("x" + (id - 1 + 10));
+        }
+        status = ServerStatus.RECOVERING;
+        
     }
 
     public String getVariables() {
@@ -108,11 +121,17 @@ public class Site {
     }
     
     public void write(int id, int value) {
+        if(status.equals(ServerStatus.RECOVERING)) {
+            variableHasRecovered.add("x" + id);
+            if (variableHasRecovered.size() == variables.size()) {
+                setStatus(ServerStatus.UP);
+            }
+        }
         addVariableToSite(id, value);
     }
     
     public void write(String id, int value) {
-        addVariableToSite(id, value);
+        write(getWithoutStartingX(id), value);
     }
 
     public int getWithoutStartingX(String id) {
@@ -133,15 +152,16 @@ public class Site {
 		}
 		return true;
 	}
-//TODO recovery code
+
 	public boolean isReadLockAvailable(String variable) {
+	    if(status.equals(ServerStatus.RECOVERING) && !variableHasRecovered.contains(variable)) {
+	        return false;
+	    }
 		if (!lockTable.containsKey(variable)) {
 			return true;
 		} else {
 			ArrayList<Lock> locks = lockTable.get(variable);
-			if (locks.get(0).getType() == LockType.READ) { // if the locks are
-															// read locks give
-															// it
+			if (locks.get(0).getType() == LockType.READ) { // if the locks are read locks give it
 				return true;
 			} else {
 				return false;
