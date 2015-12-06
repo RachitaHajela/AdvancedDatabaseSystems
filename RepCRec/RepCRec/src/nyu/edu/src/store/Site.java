@@ -13,7 +13,6 @@ public class Site {
 
     private int id;
     private Map<Integer, Variable> variables;
-    private Map<Integer, Variable> uncommittedVariables;
    // private LockTable lockTable;
     private Map<String, ArrayList<Lock>> lockTable;
     private int previousFailtime;
@@ -28,7 +27,6 @@ public class Site {
     public Site(int id) {
 	this.id = id;
 	variables = new HashMap<Integer, Variable>();
-	uncommittedVariables = new HashMap<Integer, Variable>();
 	lockTable = new HashMap<String, ArrayList<Lock>>();
 	status = ServerStatus.UP;
     }
@@ -44,19 +42,23 @@ public class Site {
     public ServerStatus getStatus() {
 	return status;
     }
-
+    
     public void setStatus(ServerStatus status) {
-	this.status = status;
+        this.status = status;
     }
-
+    
     public void addVariableToSite(Variable variable) {
-	variables.put(variable.getId(), variable);
+        variables.put(variable.getId(), variable);
     }
 
     public void addVariableToSite(int id, int value) {
-	variables.put(id, new Variable(id, value));
+        variables.put(id, new Variable(id, value));
     }
-
+    
+    public void addVariableToSite(String id, int value) {
+        addVariableToSite(getWithoutStartingX(id), value);
+    }
+    
     public boolean variableExistsOnThisSite(String id) {
 	return variables.containsKey(id);
     }
@@ -94,41 +96,19 @@ public class Site {
     }
 
     public int read(String id) {
-	return read(getWithoutStartingX(id));
+        return read(getWithoutStartingX(id));
     }
 
     public int read(int id) {
-	return variables.get(id).getValue();
+        return variables.get(id).getValue();
     }
-
-    public void write(String id, int value) {
-	write(getWithoutStartingX(id), value);
-    }
-
+    
     public void write(int id, int value) {
-	uncommittedVariables.put(id, new Variable(id, value));
+        addVariableToSite(id, value);
     }
-
-    public void rollback(String id) {
-	rollback(getWithoutStartingX(id));
-    }
-
-    public void rollback(int id) {
-	uncommittedVariables.remove(id);
-    }
-
-    public void commit(String id) {
-	commit(getWithoutStartingX(id));
-    }
-
-    public void commit(int id) {
-	Variable variable = uncommittedVariables.get(id);
-	variables.put(id, variable);
-	uncommittedVariables.remove(id);
-    }
-
-    public boolean isVariableUncommitted(int id) {
-	return uncommittedVariables.containsKey(id);
+    
+    public void write(String id, int value) {
+        addVariableToSite(id, value);
     }
 
     public int getWithoutStartingX(String id) {

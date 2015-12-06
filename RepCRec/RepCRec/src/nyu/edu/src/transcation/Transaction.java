@@ -18,8 +18,8 @@ public class Transaction {
     private Set<Site> sitesAccessed;
     private Status transactionStatus;
     private Boolean isReadOnly;
-    private Map<String, Integer> snapshotIfReadOnly;
-    private Map<String, Integer> uncommittedVariables;
+    private HashMap<String, Integer> snapshotIfReadOnly;
+    private HashMap<String, Integer> uncommittedVariables;
 
     public Transaction(String id, int timeStamp, Boolean isReadOnly) {
 	this.ID = id;
@@ -50,10 +50,10 @@ public class Transaction {
     }
 
     public HashMap<String, Integer> getSnapshotIfReadOnly() {
-        return (HashMap<String, Integer>) snapshotIfReadOnly;
+        return snapshotIfReadOnly;
     }
 
-    public void setSnapshotIfReadOnly(Map<String, Integer> map) {
+    public void setSnapshotIfReadOnly(HashMap<String, Integer> map) {
 	this.snapshotIfReadOnly = map;
     }
 
@@ -68,7 +68,11 @@ public class Transaction {
 	public void addToUncommitedVariables(String var,int value) {
 		this.uncommittedVariables.put(var, value);
 	}
-
+	
+	public HashMap<String, Integer> getUncommitedVariables() {
+        return this.uncommittedVariables;
+    }
+	
 	/**
      * take appropriate action on commit
 	 * @return 

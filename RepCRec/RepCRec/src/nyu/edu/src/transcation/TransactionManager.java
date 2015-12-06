@@ -75,6 +75,19 @@ public class TransactionManager {
 		System.out.println("COMMIT : timestamp = " + timestamp
 				+ ", transaction = " + transaction);
 		//TODO commit all uncommited variable list
+		
+		HashMap <String, Integer> uncommitted = transaction.getUncommitedVariables();
+		for(String variable : uncommitted.keySet()) {
+		    for(Site s: sites) {
+		        if(s.variableExistsOnThisSite(variable)) {
+		            if(s.getStatus().compareTo(ServerStatus.UP) == 0 || s.getStatus().compareTo(ServerStatus.RECOVERING) == 0) {
+		                s.write(variable, uncommitted.get(variable));
+		            }
+		        }
+		    }
+		}
+		
+		transaction.getUncommitedVariables().clear();
 	}
 
 	/**
@@ -105,8 +118,8 @@ public class TransactionManager {
 	}
 
 	// making public for testing
-	public Map<String, Integer> takeSnapshot() {
-		Map<String, Integer> snapshot = new HashMap<String, Integer>();
+	public HashMap<String, Integer> takeSnapshot() {
+		HashMap<String, Integer> snapshot = new HashMap<String, Integer>();
 
 		// adding even variables
 		for (int i = 0; i < 10; i = i + 2) {
