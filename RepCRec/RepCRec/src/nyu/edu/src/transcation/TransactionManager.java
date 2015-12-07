@@ -9,6 +9,7 @@ import java.util.Set;
 import nyu.edu.src.lock.Lock;
 import nyu.edu.src.store.Site;
 import nyu.edu.src.store.Site.ServerStatus;
+import nyu.edu.src.store.SiteAccessed;
 import nyu.edu.src.store.Variable;
 import nyu.edu.src.transcation.Transaction.Status;
 import nyu.edu.src.transcation.WaitOperation.OPERATION;
@@ -161,13 +162,13 @@ public class TransactionManager {
 	    	return;
 	    }
 	    
-	    Set<Site> setOfSitesAccessed = transaction.getSitesAccessed();
+	    Set<SiteAccessed> setOfSitesAccessed = transaction.getSitesAccessed();
 	    
 	    if (!transaction.getIsReadOnly()) {
     	    int transactionTimestamp = transaction.getTimeStamp();
-    	    for (Site s : setOfSitesAccessed) {
-    	        if(transactionTimestamp <= s.getPreviousFailtime() || s.getStatus().compareTo(ServerStatus.DOWN) == 0) {
-    	            System.out.println("Transcation " + transactionID + " aborted because Site " + s.getId() + " was down!");
+    	    for (SiteAccessed s : setOfSitesAccessed) {
+    	        if(s.getTimeOfAccess() <= s.getSiteAccessed().getPreviousFailtime() || s.getSiteAccessed().getStatus().compareTo(ServerStatus.DOWN) == 0) {
+    	            System.out.println("Transcation " + transactionID + " aborted because Site " + s.getSiteAccessed().getId() + " was down!");
     	            transaction.abort(timestamp);
     	            clearLocksAndUnblock(timestamp, transaction); 
     	            return;
@@ -245,7 +246,8 @@ public class TransactionManager {
 	                //take lock if not then wait or die
 	                if(site.isWriteLockAvailable(transaction,variable)) {
 	                    site.getWriteLock(transaction,variable);
-	                    transaction.addToSitesAccessed(site);
+	                    SiteAccessed siteAccessed = new SiteAccessed(site, currentTime);
+	                    transaction.addToSitesAccessed(siteAccessed);
 
 	                    //check if transaction is waiting for more locks
 
@@ -307,7 +309,6 @@ public class TransactionManager {
         Site site = sites.get(siteID-1);
         if( site != null) {
             System.out.println("RECOVER : siteID = " + siteID);
-            site.setStatus(ServerStatus.RECOVERING);
             site.recover();
         }
     }
@@ -339,7 +340,8 @@ public class TransactionManager {
 						if(site.isWriteLockAvailable(transaction,variable)) {
 							site.getWriteLock(transaction,variable);
 							transaction.setTransactionStatus(Status.RUNNING);
-							transaction.addToSitesAccessed(site);
+							SiteAccessed siteAccessed = new SiteAccessed(site, currentTime);
+							transaction.addToSitesAccessed(siteAccessed);
 							transaction.addToUncommitedVariables(variable, value);
 							System.out.println("lock taken");
 						}
@@ -387,7 +389,8 @@ public class TransactionManager {
 			    //if lock can be taken 
 			    if(site.isWriteLockAvailable(transaction, variable)) {
 			        site.getWriteLock(transaction, variable);
-			        transaction.addToSitesAccessed(site);
+			        SiteAccessed siteAccessed = new SiteAccessed(site, currentTime);
+			        transaction.addToSitesAccessed(siteAccessed);
 			    }
 			    else { //either the transaction waits or gets aborted
 			        if(site.transactionWaits(transaction,variable)) {
@@ -442,7 +445,8 @@ public class TransactionManager {
 					site.getReadLock(transaction, variable);
 					System.out.println(transactionID + " reads "+variable+" value: "+site.read(variable));
 					transaction.setTransactionStatus(Status.RUNNING);
-					transaction.addToSitesAccessed(site);
+					SiteAccessed siteAccessed = new SiteAccessed(site, currentTime);
+					transaction.addToSitesAccessed(siteAccessed);
 				}
 				else {
 					if(site.transactionWaits(transaction,variable)) {
@@ -477,7 +481,8 @@ public class TransactionManager {
 					System.out.println(transactionID + " reads " + variable
 							+ " value: " + site.read(variable));
 					valueRead = true;
-					transaction.addToSitesAccessed(site);
+					SiteAccessed siteAccessed = new SiteAccessed(site, currentTime);
+					transaction.addToSitesAccessed(siteAccessed);
 					break;
 				}
 			}

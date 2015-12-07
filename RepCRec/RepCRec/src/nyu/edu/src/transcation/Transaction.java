@@ -6,47 +6,48 @@ import java.util.Map;
 import java.util.Set;
 
 import nyu.edu.src.store.Site;
+import nyu.edu.src.store.SiteAccessed;
 
 public class Transaction {
 
     public enum Status {
-	RUNNING, WAITING, ABORTED, COMMITED
+        RUNNING, WAITING, ABORTED, COMMITED
     }
 
     private String ID;
     private int timeStamp;
-    private Set<Site> sitesAccessed;
+    private Set<SiteAccessed> sitesAccessed;
     private Status transactionStatus;
     private Boolean isReadOnly;
     private HashMap<String, Integer> snapshotIfReadOnly;
     private HashMap<String, Integer> uncommittedVariables;
 
     public Transaction(String id, int timeStamp, Boolean isReadOnly) {
-	this.ID = id;
-	this.timeStamp = timeStamp;
-	this.isReadOnly = isReadOnly;
-	sitesAccessed = new HashSet<Site>();
-	uncommittedVariables = new HashMap<String, Integer>();
+        this.ID = id;
+        this.timeStamp = timeStamp;
+        this.isReadOnly = isReadOnly;
+        sitesAccessed = new HashSet<SiteAccessed>();
+        uncommittedVariables = new HashMap<String, Integer>();
     }
 
     public String getID() {
-	return ID;
+        return ID;
     }
 
     public int getTimeStamp() {
-	return timeStamp;
+        return timeStamp;
     }
 
     public Status getTransactionStatus() {
-	return transactionStatus;
+        return transactionStatus;
     }
 
     public void setTransactionStatus(Status transactionStatus) {
-	this.transactionStatus = transactionStatus;
+        this.transactionStatus = transactionStatus;
     }
 
     public Boolean getIsReadOnly() {
-	return isReadOnly;
+        return isReadOnly;
     }
 
     public HashMap<String, Integer> getSnapshotIfReadOnly() {
@@ -54,38 +55,40 @@ public class Transaction {
     }
 
     public void setSnapshotIfReadOnly(HashMap<String, Integer> map) {
-	this.snapshotIfReadOnly = map;
+        this.snapshotIfReadOnly = map;
     }
 
-    public Set<Site> getSitesAccessed() {
-		return sitesAccessed;
-	}
+    public Set<SiteAccessed> getSitesAccessed() {
+        return sitesAccessed;
+    }
 
-	public void addToSitesAccessed(Site siteAccessed) {
-		this.sitesAccessed.add(siteAccessed);
-	}
-	
-	public void addToUncommitedVariables(String var,int value) {
-		this.uncommittedVariables.put(var, value);
-	}
-	
-	public HashMap<String, Integer> getUncommitedVariables() {
+    public void addToSitesAccessed(SiteAccessed siteAccessed) {
+        this.sitesAccessed.add(siteAccessed);
+    }
+
+    public void addToUncommitedVariables(String var, int value) {
+        this.uncommittedVariables.put(var, value);
+    }
+
+    public HashMap<String, Integer> getUncommitedVariables() {
         return this.uncommittedVariables;
     }
-	
-	/**
+
+    /**
      * take appropriate action on commit
-	 * @return 
+     * 
+     * @return
      */
     public void commit(int timestamp) {
-    	this.transactionStatus = Status.COMMITED;
+        this.transactionStatus = Status.COMMITED;
     }
 
     /**
      * take appropriate action on abort
-     * @param timestamp2 
+     * 
+     * @param timestamp2
      */
     public void abort(int timestamp) {
-    	this.transactionStatus = Status.ABORTED;
+        this.transactionStatus = Status.ABORTED;
     }
 }
