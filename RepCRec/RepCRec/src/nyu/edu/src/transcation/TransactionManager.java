@@ -266,8 +266,7 @@ public class TransactionManager {
                             }
                         }
 
-                        // transaction.addToUncommitedVariables(variable,
-                        // value);
+                        transaction.addToUncommitedVariables(variable, waitTask.getValue());
                     }
 
                 } else { // lock not available
@@ -277,7 +276,7 @@ public class TransactionManager {
                                 transaction, OPERATION.WRITE, variable, site,
                                 waitTask.getValue());
                         waitingOperations.add(waitOperation);
-                        System.out.println("waiting");
+                        
                     } else {
                         transaction.setTransactionStatus(Status.ABORTED);
                         clearLocksAndUnblock(currentTime, transaction);
