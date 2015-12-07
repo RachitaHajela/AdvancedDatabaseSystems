@@ -6,6 +6,13 @@ import nyu.edu.src.transcation.Transaction;
  */
 public class Lock {
 
+    /**
+     * This class defines the Lock. A Lock is defined by the type of the lock
+     * and also the transaction that holds that lock.
+     * 
+     * @author Rachita & Anto
+     */
+
     public enum LockType {
         READ, WRITE;
     }
