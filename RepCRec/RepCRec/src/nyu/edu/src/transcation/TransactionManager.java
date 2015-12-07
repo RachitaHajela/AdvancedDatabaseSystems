@@ -62,8 +62,7 @@ public class TransactionManager {
 	 */
 	public void tick() {
 		currentTime++;
-
-		// to do - function to check on waiting transactions
+		checkWaitingOperations();
 	}
 
 	/**
@@ -203,8 +202,75 @@ public class TransactionManager {
 	            }
 	        }
 	    }
+	    
+	    checkWaitingOperations();
 	}
 	
+	
+	public void checkWaitingOperations() {
+	    int count = waitingOperations.size();
+
+	    List<WaitOperation> dummyOperations = new ArrayList<WaitOperation>();
+
+	    for (int i=0;i<waitingOperations.size();i++) {
+	        dummyOperations.add(waitingOperations.get(i));
+	    }
+
+	    for(int i=0; i<count ; i++) {
+	        WaitOperation waitTask = dummyOperations.get(i);
+	        waitingOperations.remove(waitTask);
+
+	        //Add a comment to this line
+	        if (waitTask.getWaitOperation() == OPERATION.READ) {
+	            readRequest(waitTask.getWaitingTransaction().getTimeStamp(),waitTask.getWaitingTransaction().getID(), waitTask.getVariable());
+	        }
+	        else {
+	            //check if write lock is available on the site:
+	            Site site = waitTask.getWaitSite();
+	            Transaction transaction = waitTask.getWaitingTransaction();
+	            String variable = waitTask.getVariable();
+	            if(site.getStatus() == ServerStatus.UP || site.getStatus() == ServerStatus.RECOVERING) {
+	                boolean moreLocksRequired = false;
+
+	                //take lock if not then wait or die
+	                if(site.isWriteLockAvailable(transaction,variable)) {
+	                    site.getWriteLock(transaction,variable);
+	                    transaction.addToSitesAccessed(site);
+
+	                    //check if transaction is waiting for more locks
+
+	                    for(int j=i;j<count;j++) {
+	                        if(dummyOperations.get(j).getWaitingTransaction() == transaction) {
+	                            moreLocksRequired = true;
+	                        } 
+	                    }
+
+	                    //transaction.addToUncommitedVariables(variable, value);
+	                }
+
+	            }
+	            else {  //lock not available
+	                if(site.transactionWaits(transaction,variable)) {
+	                    transaction.setTransactionStatus(Status.WAITING);
+	                    WaitOperation waitOperation = new WaitOperation(transaction,
+	                            OPERATION.WRITE, variable,site,waitTask.getValue());
+	                    waitingOperations.add(waitOperation);
+	                    System.out.println("waiting");
+	                }
+	                else {
+	                    transaction.setTransactionStatus(Status.ABORTED);
+	                    clearLocksAndUnblock(currentTime, transaction);
+	                }
+
+	            }
+
+
+	        }
+
+
+	    }
+	}
+
 	/**
      * site fails
      * 
@@ -270,7 +336,7 @@ public class TransactionManager {
 							if(site.transactionWaits(transaction,variable)) {
 								transaction.setTransactionStatus(Status.WAITING);
 								WaitOperation waitOperation = new WaitOperation(transaction,
-										OPERATION.READ, variable,site);
+										OPERATION.WRITE, variable,site, value);
 								waitingOperations.add(waitOperation);
 								System.out.println("waiting");
 							}
@@ -288,7 +354,7 @@ public class TransactionManager {
 					else { //the site is down. It waits
 						transaction.setTransactionStatus(Status.WAITING);
 						WaitOperation waitOperation = new WaitOperation(transaction,
-								OPERATION.WRITE, variable,site);
+								OPERATION.WRITE, variable,site, value);
 						waitingOperations.add(waitOperation);
 					}
 				}
@@ -316,7 +382,7 @@ public class TransactionManager {
 			        if(site.transactionWaits(transaction,variable)) {
 			            transaction.setTransactionStatus(Status.WAITING);
 			            WaitOperation waitOperation = new WaitOperation(transaction,
-			                    OPERATION.WRITE, variable,site);
+			                    OPERATION.WRITE, variable,site, value);
 			            waitingOperations.add(waitOperation);
 			            allLocksAcquired = false;
 			        }
@@ -359,7 +425,7 @@ public class TransactionManager {
 		if(varNum%2 != 0) {
 			int siteNum = varNum%10;
 			Site site = sites.get(siteNum);
-			if(site.getStatus() == ServerStatus.UP) {
+			if(site.getStatus() == ServerStatus.UP  || site.getStatus() == ServerStatus.RECOVERING) {
 				
 				if(site.isReadLockAvailable(variable)) {
 					site.getReadLock(transaction, variable);

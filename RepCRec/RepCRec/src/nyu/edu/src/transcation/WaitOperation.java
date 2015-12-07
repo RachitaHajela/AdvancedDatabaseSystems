@@ -9,21 +9,23 @@ public class WaitOperation {
 	}
 
 	private Transaction waitingTransaction;
-	private OPERATION waitOperation;
+	private OPERATION operationType;
 	private String variable;
 	private Site waitSite;
+	private int value;
 	
 	public WaitOperation(Transaction t, OPERATION o, String var) {
 		this.waitingTransaction = t;
-		this.waitOperation = o;
+		this.operationType = o;
 		this.variable = var;
 	}
 	
-	public WaitOperation(Transaction t, OPERATION o, String var,Site site) {
+	public WaitOperation(Transaction t, OPERATION o, String var,Site site, int val) {
 		this.waitingTransaction = t;
-		this.waitOperation = o;
+		this.operationType = o;
 		this.variable = var;
 		this.waitSite = site;
+		this.value = val;
 	}
 
 	public Transaction getWaitingTransaction() {
@@ -31,11 +33,19 @@ public class WaitOperation {
 	}
 
 	public OPERATION getWaitOperation() {
-		return waitOperation;
+		return operationType;
 	}
 
 	public String getVariable() {
 		return variable;
+	}
+	
+	public Site getWaitSite() {
+	    return waitSite;
+	}
+	
+	public int getValue() {
+	    return value;
 	}
 
 }
