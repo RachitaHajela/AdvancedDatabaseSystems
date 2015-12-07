@@ -88,9 +88,10 @@ public class Executor {
 	}
 
 	public static void main(String[] args) {
-		Executor exec = new Executor(
-				"C:/Users/Rachita/repos/adb_repcrec_project/RepCRec/RepCRec/src/nyu/edu/src/testCases/testcase1.txt");
-		// Executor("/Users/anto/Google Drive/NYU3rdSem/ADB/finalProject/adb_repcrec_project/RepCRec/RepCRec/src/nyu/edu/src/testCases/testcase1.txt");
-		// exec.readFromInput();
+		//Executor exec = new Executor(
+		//		"C:/Users/Rachita/repos/adb_repcrec_project/RepCRec/RepCRec/src/nyu/edu/src/testCases/testcase1.txt");
+		Executor exec = new Executor("/Users/anto/Google Drive/NYU3rdSem/ADB/finalProject/adb_repcrec_project/"
+		        + "RepCRec/RepCRec/src/nyu/edu/src/testCases/testcase12.txt");
+		 exec.readFromInput();
 	}
 }

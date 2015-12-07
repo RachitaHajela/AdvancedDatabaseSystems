@@ -190,16 +190,26 @@ public class TransactionManager {
 	    
 	    for(Site s : sites) {
 	        Map<String, ArrayList<Lock>> siteLockTable = s.getLockTable();
+	        ArrayList<String> dummySiteLockTable = new ArrayList<String>();
 	        for(String variable : siteLockTable.keySet()) {
 	            ArrayList<Lock> lockArrayList = siteLockTable.get(variable);
+	            ArrayList<Lock> dummyLockArrayList = new ArrayList<Lock>();
 	            for(Lock lock : lockArrayList) {
 	                if(lock.getTransaction().equals(transaction)) {
-	                    lockArrayList.remove(lock);
+	                    dummyLockArrayList.add(lock);
 	                }
 	            }
-	            if(lockArrayList.size() == 0) {
-	                siteLockTable.remove(variable);
+	            for(Lock lock : dummyLockArrayList) {
+	                siteLockTable.get(variable).remove(lock);
 	            }
+	            
+	            if(siteLockTable.get(variable).size() == 0) {
+	                dummySiteLockTable.add(variable);
+	            }
+	        }
+	        
+	        for(String variable : dummySiteLockTable) {
+	            siteLockTable.remove(variable);
 	        }
 	    }
 	    
