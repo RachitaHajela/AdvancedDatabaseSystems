@@ -212,5 +212,22 @@ public class Site {
         }
 
     }
+    
+    /**
+     * returns true if transaction has a write lock on the variable
+     * @param transaction
+     * @param variable
+     * @return true or false
+     * @author RHAJELA
+     */
+    public boolean isWriteLockTaken(Transaction transaction, String variable) {
+        if (lockTable.containsKey(variable)) {
+            Lock lock = lockTable.get(variable).get(0);
+            if (lock.getTransaction().equals(transaction) && lock.getType().equals(LockType.WRITE)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 }

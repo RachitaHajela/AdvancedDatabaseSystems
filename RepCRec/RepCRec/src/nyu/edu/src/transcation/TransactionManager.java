@@ -75,15 +75,14 @@ public class TransactionManager {
     public void commitRequest(Transaction transaction, int timestamp) {
         System.out.println("COMMIT : timestamp = " + timestamp
                 + ", transaction = " + transaction.getID());
-        // TODO commit all uncommited variable list
 
         HashMap<String, Integer> uncommitted = transaction
                 .getUncommitedVariables();
         for (String variable : uncommitted.keySet()) {
             for (Site s : sites) {
                 if (s.variableExistsOnThisSite(variable)) {
-                    if (s.getStatus().compareTo(ServerStatus.UP) == 0
-                            || s.getStatus().compareTo(ServerStatus.RECOVERING) == 0) {
+                    if ((s.getStatus().compareTo(ServerStatus.UP) == 0
+                            || s.getStatus().compareTo(ServerStatus.RECOVERING) == 0) && s.isWriteLockTaken(transaction,variable)) {
                         s.write(variable, uncommitted.get(variable));
                     }
                 }
