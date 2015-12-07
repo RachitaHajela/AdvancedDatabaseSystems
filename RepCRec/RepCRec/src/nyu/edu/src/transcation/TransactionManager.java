@@ -537,14 +537,14 @@ public class TransactionManager {
      */
     public void dump(int siteNum) {
         System.out.println("DUMP : siteNum = " + siteNum);
-        if (sites.get(siteNum - 1).getStatus() == ServerStatus.UP) {
+        ServerStatus status = sites.get(siteNum - 1).getStatus();
+        
+        if (status == ServerStatus.UP || status == ServerStatus.RECOVERING) {
             System.out.println("Site " + sites.get(siteNum - 1).getId() + ": "
                     + sites.get(siteNum - 1).getVariables());
-        } else if (sites.get(siteNum - 1).getStatus() == ServerStatus.DOWN) {
+        } else if (status == ServerStatus.DOWN) {
             System.out.println("Site " + sites.get(siteNum - 1).getId()
                     + ": Down");
-        } else {
-            // TODO serverstatus = Recovering
         }
     }
 
@@ -557,16 +557,16 @@ public class TransactionManager {
         int variableID = Integer.parseInt(var.substring(1));
 
         for (Site s : sites) {
-            if (s.getStatus() == ServerStatus.UP) {
+            ServerStatus status = s.getStatus();
+            
+            if (status == ServerStatus.UP || status == ServerStatus.RECOVERING) {
                 String val = s.getVariable(variableID);
                 if (!val.equalsIgnoreCase("ignore")) {
                     System.out.println("SITE " + s.getId() + " : "
                             + s.getVariable(variableID));
                 }
-            } else if (s.getStatus() == ServerStatus.DOWN) {
+            } else if (status == ServerStatus.DOWN) {
                 System.out.println("Server is Down!");
-            } else {
-                // TODO serverstatus = Recovering
             }
         }
     }
