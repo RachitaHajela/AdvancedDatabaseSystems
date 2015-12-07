@@ -4,6 +4,12 @@ import nyu.edu.src.transcation.TransactionManager;
 
 public class Variable {
 
+    /**
+     * This class defines the Variable with its Unique ID and its value
+     * 
+     * @author Rachita & Anto
+     */
+
     private int id;
     private int value;
 
