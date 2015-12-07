@@ -27,6 +27,8 @@ public class TransactionManager {
     /**
      * sets up the initial database: sites with variables and their initial
      * values
+     * 
+     * @author Rachita & Anto
      */
     public void setUp() {
         // creating variables
@@ -59,7 +61,9 @@ public class TransactionManager {
     }
 
     /**
-     * increases the time by one. (equivalent to 1 tick
+     * increases the time by one. (equivalent to 1 tick)
+     * 
+     * @author Rachita & Anto
      */
     public void tick() {
         currentTime++;
@@ -70,7 +74,11 @@ public class TransactionManager {
      * transaction makes a commit request
      * 
      * @param transaction
+     *            - The transaction that is trying to commit
      * @param timeStamp
+     *            - the timestamp of the commit request
+     * 
+     * @author Rachita & Anto
      */
     public void commitRequest(Transaction transaction, int timestamp) {
         System.out.println("COMMIT : timestamp = " + timestamp
@@ -81,8 +89,9 @@ public class TransactionManager {
         for (String variable : uncommitted.keySet()) {
             for (Site s : sites) {
                 if (s.variableExistsOnThisSite(variable)) {
-                    if ((s.getStatus().compareTo(ServerStatus.UP) == 0
-                            || s.getStatus().compareTo(ServerStatus.RECOVERING) == 0) && s.isWriteLockTaken(transaction,variable)) {
+                    if ((s.getStatus().compareTo(ServerStatus.UP) == 0 || s
+                            .getStatus().compareTo(ServerStatus.RECOVERING) == 0)
+                            && s.isWriteLockTaken(transaction, variable)) {
                         s.write(variable, uncommitted.get(variable));
                     }
                 }
@@ -96,7 +105,11 @@ public class TransactionManager {
      * transaction begins
      * 
      * @param timeStamp
+     *            - the timestamp of the beginning of the Transaction
      * @param transaction
+     *            - The transaction that is starting
+     * 
+     * @author Rachita & Anto
      */
     public void begin(int timeStamp, String transactionID) {
         System.out.println("BEGIN : timestamp = " + timeStamp
@@ -109,7 +122,12 @@ public class TransactionManager {
      * transaction begins in Read-Only mode
      * 
      * @param timeStamp
+     *            - the timestamp of the beginning of the Transaction in
+     *            Read-Only Mode
      * @param transaction
+     *            - The transaction that is starting in Read-Only Mode
+     * 
+     * @author Rachita & Anto
      */
     public void beginRO(int timeStamp, String transactionID) {
         System.out.println("BEGINRO : timestamp = " + timeStamp
@@ -118,6 +136,12 @@ public class TransactionManager {
         trans.setSnapshotIfReadOnly(takeSnapshot());
         transactionsMap.put(transactionID, trans);
     }
+
+    /**
+     * Takes the snapshot to be used by Read-Only Transactions
+     * 
+     * @author Rachita & Anto
+     */
 
     // making public for testing
     public HashMap<String, Integer> takeSnapshot() {
@@ -146,8 +170,12 @@ public class TransactionManager {
     /**
      * transaction ends
      * 
-     * @param timestamp
+     * @param timeStamp
+     *            - the timestamp of the ending of the Transaction
      * @param transaction
+     *            - The transaction that is ending
+     * 
+     * @author Rachita & Anto
      */
     public void end(int timestamp, String transactionID) {
 
@@ -193,6 +221,16 @@ public class TransactionManager {
         clearLocksAndUnblock(timestamp, transaction);
     }
 
+    /**
+     * 
+     * @param timeStamp
+     *            - the time moment that the Transaction comes to this method
+     * @param transaction
+     *            - The transaction that we need to clear from the sites lock
+     *            table
+     * 
+     * @author Rachita & Anto
+     */
     public void clearLocksAndUnblock(int timestamp, Transaction transaction) {
         transactionsMap.remove(transaction.getID());
 
@@ -224,6 +262,11 @@ public class TransactionManager {
         checkWaitingOperations();
     }
 
+    /**
+     * Checks if any of the waiting operations can be started up
+     * 
+     * @author Rachita & Anto
+     */
     public void checkWaitingOperations() {
         int count = waitingOperations.size();
 
@@ -249,8 +292,6 @@ public class TransactionManager {
                 String variable = waitTask.getVariable();
                 if (site.getStatus() == ServerStatus.UP
                         || site.getStatus() == ServerStatus.RECOVERING) {
-                    boolean moreLocksRequired = false;
-
                     // take lock if not then wait or die
                     if (site.isWriteLockAvailable(transaction, variable)) {
                         site.getWriteLock(transaction, variable);
@@ -262,11 +303,11 @@ public class TransactionManager {
 
                         for (int j = i; j < count; j++) {
                             if (dummyOperations.get(j).getWaitingTransaction() == transaction) {
-                                moreLocksRequired = true;
                             }
                         }
 
-                        transaction.addToUncommitedVariables(variable, waitTask.getValue());
+                        transaction.addToUncommitedVariables(variable,
+                                waitTask.getValue());
                     }
 
                 } else { // lock not available
@@ -276,7 +317,7 @@ public class TransactionManager {
                                 transaction, OPERATION.WRITE, variable, site,
                                 waitTask.getValue());
                         waitingOperations.add(waitOperation);
-                        
+
                     } else {
                         transaction.setTransactionStatus(Status.ABORTED);
                         clearLocksAndUnblock(currentTime, transaction);
@@ -293,7 +334,11 @@ public class TransactionManager {
      * site fails
      * 
      * @param timeStamp
+     *            - the timestamp of the failure of a site
      * @param siteID
+     *            - the identifier of the site that is failing
+     * 
+     * @author Rachita & Anto
      */
     public void fail(int timestamp, int siteID) {
         Site site = sites.get(siteID - 1);
@@ -309,7 +354,11 @@ public class TransactionManager {
      * site recovers
      * 
      * @param timeStamp
+     *            - the timestamp of the recovery of a site
      * @param siteID
+     *            - the identifier of the site that is recovering
+     * 
+     * @author Rachita & Anto
      */
     public void recover(int siteID) {
         Site site = sites.get(siteID - 1);
@@ -323,9 +372,15 @@ public class TransactionManager {
      * transaction makes a write request
      * 
      * @param timeStamp
+     *            - the timestamp of the write request of the Transaction
      * @param transaction
+     *            - The Transaction that is making the write request
      * @param variable
+     *            - The variable that we are writing
      * @param val
+     *            - The value that we writing to the variable
+     * 
+     * @author Rachita & Anto
      */
     public void writeRequest(int timestamp, String transactionID,
             String variable, String val) {
@@ -383,6 +438,19 @@ public class TransactionManager {
         }
     }
 
+    /**
+     * 
+     * @param timeStamp
+     *            - the timestamp of the write request of the Transaction
+     * @param transaction
+     *            - The Transaction that is making the write request
+     * @param variable
+     *            - The variable that we are writing
+     * @param value
+     *            - The value that we writing to the variable
+     * 
+     * @author Rachita & Anto
+     */
     private void writeRequestEvenVariable(int timestamp,
             Transaction transaction, String variable, int value) {
         boolean allLocksAcquired = true;
@@ -425,8 +493,13 @@ public class TransactionManager {
      * transaction makes a read request
      * 
      * @param timeStamp
+     *            - the timestamp of the read request of the Transaction
      * @param transaction
+     *            - The Transaction that is making the read request
      * @param variable
+     *            - The variable that we are reading
+     * 
+     * @author Rachita & Anto
      */
     public void readRequest(int timestamp, String transactionID, String variable) {
         System.out.println("READ : timestamp = " + timestamp
@@ -496,10 +569,12 @@ public class TransactionManager {
                     }
                 }
             }
-            if (!valueRead) { //either all servers are down or there is a write lock.
-                for(int i=0;i<10;i++) {
-                    if(sites.get(i).getStatus() == ServerStatus.UP) {
-                        if(!sites.get(i).transactionWaits(transaction, variable)) {
+            if (!valueRead) { // either all servers are down or there is a write
+                // lock.
+                for (int i = 0; i < 10; i++) {
+                    if (sites.get(i).getStatus() == ServerStatus.UP) {
+                        if (!sites.get(i).transactionWaits(transaction,
+                                variable)) {
                             transaction.setTransactionStatus(Status.ABORTED);
                             System.out.println("Transaction " + transactionID
                                     + " Aborted!");
@@ -518,6 +593,15 @@ public class TransactionManager {
 
     }
 
+    /**
+     * 
+     * @param transaction
+     *            - The Transaction that is making the read request
+     * @param var
+     *            - The variable that we are reading
+     * 
+     * @author Rachita & Anto
+     */
     private void readOnlyRequest(Transaction transaction, String var) {
         HashMap<String, Integer> snapshot = transaction.getSnapshotIfReadOnly();
         if (snapshot.containsKey(var)) {
@@ -531,6 +615,8 @@ public class TransactionManager {
     /**
      * gives the committed values of all copies of all variables at all sites,
      * sorted per site.
+     * 
+     * @author Rachita & Anto
      */
     public void dump() {
         System.out.println("DUMP ALL:");
@@ -543,11 +629,14 @@ public class TransactionManager {
      * gives the committed values of all copies of all variables at site siteNUm
      * 
      * @param siteNum
+     *            - identifier of the site that we are dumping from
+     * 
+     * @author Rachita & Anto
      */
     public void dump(int siteNum) {
         System.out.println("DUMP : siteNum = " + siteNum);
         ServerStatus status = sites.get(siteNum - 1).getStatus();
-        
+
         if (status == ServerStatus.UP || status == ServerStatus.RECOVERING) {
             System.out.println("Site " + sites.get(siteNum - 1).getId() + ": "
                     + sites.get(siteNum - 1).getVariables());
@@ -561,13 +650,17 @@ public class TransactionManager {
      * gives the committed values of all copies of variable var at all sites.
      * 
      * @param var
+     *            - the variable that we are dumping from all sites that contain
+     *            the variable
+     * 
+     * @author Rachita & Anto
      */
     public void dump(String var) {
         int variableID = Integer.parseInt(var.substring(1));
 
         for (Site s : sites) {
             ServerStatus status = s.getStatus();
-            
+
             if (status == ServerStatus.UP || status == ServerStatus.RECOVERING) {
                 String val = s.getVariable(variableID);
                 if (!val.equalsIgnoreCase("ignore")) {
