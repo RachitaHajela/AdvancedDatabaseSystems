@@ -4,7 +4,7 @@ public class SiteAccessed {
 
     private Site site;
     private int timeOfAccess;
-    
+
     public SiteAccessed(Site siteAccessed, int timeOfAccess) {
         super();
         this.site = siteAccessed;

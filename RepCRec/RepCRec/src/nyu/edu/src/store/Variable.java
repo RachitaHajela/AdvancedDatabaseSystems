@@ -8,28 +8,28 @@ public class Variable {
     private int value;
 
     public Variable(int id, int value) {
-	if (id < 1 || id > TransactionManager.numberOfTotalVariables) {
-	    throw new NullPointerException("Variable ID is not in bounds!!");
-	}
+        if (id < 1 || id > TransactionManager.numberOfTotalVariables) {
+            throw new NullPointerException("Variable ID is not in bounds!!");
+        }
 
-	this.id = id;
-	this.value = value;
+        this.id = id;
+        this.value = value;
     }
 
     public int getId() {
-	return id;
+        return id;
     }
 
     public void setId(int id) {
-	this.id = id;
+        this.id = id;
     }
 
     public int getValue() {
-	return value;
+        return value;
     }
 
     public void setValue(int value) {
-	this.value = value;
+        this.value = value;
     }
 
 }
