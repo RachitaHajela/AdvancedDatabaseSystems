@@ -498,8 +498,19 @@ public class TransactionManager {
                     }
                 }
             }
-            if (!valueRead) {
-                // if all servers are down wait. if write lock check do i wait?
+            if (!valueRead) { //either all servers are down or there is a write lock.
+                for(int i=0;i<10;i++) {
+                    if(sites.get(i).getStatus() == ServerStatus.UP) {
+                        if(!sites.get(i).transactionWaits(transaction, variable)) {
+                            transaction.setTransactionStatus(Status.ABORTED);
+                            System.out.println("Transaction " + transactionID
+                                    + " Aborted!");
+                            clearLocksAndUnblock(timestamp, transaction);
+                            return;
+                        }
+                        break;
+                    }
+                }
                 WaitOperation waitOperation = new WaitOperation(transaction,
                         OPERATION.READ, variable);
                 waitingOperations.add(waitOperation);
