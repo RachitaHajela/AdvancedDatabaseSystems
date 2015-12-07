@@ -4,6 +4,14 @@ import nyu.edu.src.store.Site;
 
 public class WaitOperation {
 
+    /**
+     * This class is used to keep track of the sites that have been put on the
+     * Wait Queue. And we check if we can start up Operations from this on each
+     * time tick
+     * 
+     * @author Rachita & Anto
+     */
+
     public enum OPERATION {
         READ, WRITE;
     }
