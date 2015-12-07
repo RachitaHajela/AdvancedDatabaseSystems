@@ -7,6 +7,13 @@ import nyu.edu.src.transcation.TransactionManager;
 
 public class Executor {
 
+    /**
+     * This class is the Runner Class for this App. We read the input and take
+     * the call the required methods from this Executor class.
+     * 
+     * @author Rachita & Anto
+     */
+
     private String inputFile;
     private TransactionManager transactionManager;
 
@@ -16,6 +23,12 @@ public class Executor {
         transactionManager.setUp();
     }
 
+    /**
+     * Reads the input and splits into the function that is requested, and the
+     * arguments for that function. Calls the required methods from here.
+     * 
+     * @author Rachita & Anto
+     */
     public void readFromInput() {
         BufferedReader br;
 
@@ -67,11 +80,10 @@ public class Executor {
                     } else if (functionToDo.equalsIgnoreCase("dump")) {
                         if (inputToFunction.equals("")) {
                             transactionManager.dump();
-                        } 
-                        else if (inputToFunction.toLowerCase().startsWith("x")) {
+                        } else if (inputToFunction.toLowerCase()
+                                .startsWith("x")) {
                             transactionManager.dump(inputToFunction);
-                        }
-                        else {
+                        } else {
                             int siteID = Integer.parseInt(inputToFunction);
                             transactionManager.dump(siteID);
                         }
@@ -90,6 +102,11 @@ public class Executor {
         }
     }
 
+    /**
+     * Main method starts up the Executor and calls method readFromInput()
+     * 
+     * @author Rachita & Anto
+     */
     public static void main(String[] args) {
         // Executor exec = new Executor(
         // "C:/Users/Rachita/repos/adb_repcrec_project/RepCRec/RepCRec/src/nyu/edu/src/testCases/testcase1.txt");
