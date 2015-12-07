@@ -14,7 +14,6 @@ public class Executor {
         this.inputFile = inputFile;
         transactionManager = new TransactionManager();
         transactionManager.setUp();
-        // transactionManager.dump("x2");
     }
 
     public void readFromInput() {
@@ -68,7 +67,11 @@ public class Executor {
                     } else if (functionToDo.equalsIgnoreCase("dump")) {
                         if (inputToFunction.equals("")) {
                             transactionManager.dump();
-                        } else {
+                        } 
+                        else if (inputToFunction.toLowerCase().startsWith("x")) {
+                            transactionManager.dump(inputToFunction);
+                        }
+                        else {
                             int siteID = Integer.parseInt(inputToFunction);
                             transactionManager.dump(siteID);
                         }
@@ -92,7 +95,8 @@ public class Executor {
         // "C:/Users/Rachita/repos/adb_repcrec_project/RepCRec/RepCRec/src/nyu/edu/src/testCases/testcase1.txt");
         Executor exec = new Executor(
                 "/Users/anto/Google Drive/NYU3rdSem/ADB/finalProject/adb_repcrec_project/"
-                        + "RepCRec/RepCRec/src/nyu/edu/src/testCases/testcase1.txt");
+                        + "RepCRec/RepCRec/src/nyu/edu/src/testCases/testcase6.txt");
         exec.readFromInput();
+        exec.transactionManager.dump();
     }
 }
