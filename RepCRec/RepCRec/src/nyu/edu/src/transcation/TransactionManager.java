@@ -73,7 +73,7 @@ public class TransactionManager {
 	 */
 	public void commitRequest(Transaction transaction, int timestamp) {
 		System.out.println("COMMIT : timestamp = " + timestamp
-				+ ", transaction = " + transaction);
+				+ ", transaction = " + transaction.getID());
 		//TODO commit all uncommited variable list
 		
 		HashMap <String, Integer> uncommitted = transaction.getUncommitedVariables();
@@ -304,9 +304,10 @@ public class TransactionManager {
      * @param siteID
      */
     public void recover(int siteID) {
-        Site site = sites.get(siteID);
+        Site site = sites.get(siteID-1);
         if( site != null) {
             System.out.println("RECOVER : siteID = " + siteID);
+            site.setStatus(ServerStatus.RECOVERING);
             site.recover();
         }
     }
@@ -511,11 +512,12 @@ public class TransactionManager {
 		System.out.println("DUMP :");
 		for (int i = 0; i < 10; i++) {
 			if (sites.get(i).getStatus() == ServerStatus.UP) {
-				System.out.println(sites.get(i).getVariables());
+			    System.out.println("Site "+sites.get(i).getId()+": "+sites.get(i).getVariables());
 			} else if (sites.get(i).getStatus() == ServerStatus.DOWN) {
-				System.out.println("Server is down!");
+			    System.out.println("Site "+sites.get(i).getId()+": Down");
 			} else {
 				// TODO serverstatus = Recovering
+			    System.out.println("Site "+sites.get(i).getId()+": Recovering");
 			}
 		}
 	}
