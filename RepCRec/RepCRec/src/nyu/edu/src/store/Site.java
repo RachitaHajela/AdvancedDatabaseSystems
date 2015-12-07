@@ -69,7 +69,7 @@ public class Site {
     }
     
     public boolean variableExistsOnThisSite(String id) {
-	return variables.containsKey(id);
+        return variables.containsKey(getWithoutStartingX(id));
     }
 
     public void failure(int timestamp) {
