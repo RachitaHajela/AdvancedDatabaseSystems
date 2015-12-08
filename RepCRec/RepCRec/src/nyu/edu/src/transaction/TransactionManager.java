@@ -275,7 +275,8 @@ public class TransactionManager {
                 String variable = waitTask.getVariable();
                 if (site.getStatus() == ServerStatus.UP
                         || site.getStatus() == ServerStatus.RECOVERING) {
-                    // take lock if not then wait or die
+                	 // take lock if not then wait or die
+                	
                     if (site.isWriteLockAvailable(transaction, variable)) {
                         site.getWriteLock(transaction, variable);
                         SiteAccessed siteAccessed = new SiteAccessed(site,
@@ -288,12 +289,12 @@ public class TransactionManager {
                             if (dummyOperations.get(j).getWaitingTransaction() == transaction) {
                             }
                         }
-
+                       
                         transaction.addToUncommitedVariables(variable,
                                 waitTask.getValue());
                     }
 
-                } else { // lock not available
+                 else { // lock not available
                     if (site.transactionWaits(transaction, variable)) {
                         transaction.setTransactionStatus(Status.WAITING);
                         WaitOperation waitOperation = new WaitOperation(
@@ -309,7 +310,12 @@ public class TransactionManager {
                     }
 
                 }
-
+                } else {
+                	transaction.setTransactionStatus(Status.ABORTED);
+                     System .out.println("Transaction " + transaction.getID()
+                             + " Aborted because it was waiting for a lock but site "+site+"failed");
+                     clearLocksAndUnblock(currentTime, transaction);
+                }
             }
 
         }
@@ -537,6 +543,7 @@ public class TransactionManager {
     }
 
     /**
+     * handles requests for ReadOnly transactions
      * 
      * @param transaction
      *            - The Transaction that is making the read request
@@ -576,6 +583,10 @@ public class TransactionManager {
      * gives the committed values of all copies of all variables at all sites,
      * sorted per site.
      * 
+     * If a site is in recovery state, the variables which are not unique to the site of which
+     * have not been written to show the value of last commit before the failure. (note this value is not
+     * available for read by the transactions)
+     * 
      * @author Rachita & Anto
      */
     public void dump() {
@@ -587,6 +598,10 @@ public class TransactionManager {
 
     /**
      * gives the committed values of all copies of all variables at site siteNUm
+     * 
+     * If a site is in recovery state, the variables which are not unique to the site of which
+     * have not been written to show the value of last commit before the failure. (note this value is not
+     * available for read by the transactions)
      * 
      * @param siteNum
      *            - identifier of the site that we are dumping from
@@ -607,6 +622,10 @@ public class TransactionManager {
 
     /**
      * gives the committed values of all copies of variable var at all sites.
+     * 
+     * If a site is in recovery state, the variables which are not unique to the site of which
+     * have not been written to show the value of last commit before the failure. (note this value is not
+     * available for read by the transactions)
      * 
      * @param var
      *            - the variable that we are dumping from all sites that contain
