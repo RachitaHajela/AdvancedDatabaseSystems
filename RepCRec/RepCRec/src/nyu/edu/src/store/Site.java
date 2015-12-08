@@ -221,6 +221,8 @@ public class Site {
             ArrayList<Lock> locks = lockTable.get(variable);
             Transaction transHoldingLock = locks.get(0).getTransaction();
             if (transHoldingLock.getTimeStamp() < transaction.getTimeStamp()) {
+            	 System .out.println("Transaction " + transaction.getID()
+                         + " Aborted because " + transHoldingLock.getID()+" has  lock on "+variable);
                 return false;
             }
         }

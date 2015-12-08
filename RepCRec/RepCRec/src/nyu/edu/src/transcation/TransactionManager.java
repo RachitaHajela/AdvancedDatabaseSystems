@@ -1,6 +1,7 @@
 package nyu.edu.src.transcation;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -296,8 +297,8 @@ public class TransactionManager {
 
                     } else {
                         transaction.setTransactionStatus(Status.ABORTED);
-                        System .out.println("Transaction " + transaction.getID()
-                                + " Aborted because it was waiting for Older transaction");
+                       /* System .out.println("Transaction " + transaction.getID()
+                                + " Aborted because it was waiting for Older transaction");*/
                         clearLocksAndUnblock(currentTime, transaction);
                     }
 
@@ -356,8 +357,8 @@ public class TransactionManager {
                         
                     } else {
                         transaction.setTransactionStatus(Status.ABORTED);
-                       System .out.println("Transaction " + transactionID
-                                + " Aborted because it was waiting for Older transaction");
+                       /*System .out.println("Transaction " + transactionID
+                                + " Aborted because it was waiting for Older transaction");*/
                         clearLocksAndUnblock(timestamp, transaction);
                         
                     }
@@ -414,8 +415,8 @@ public class TransactionManager {
                         allLocksAcquired = false;
                     } else {
                         transaction.setTransactionStatus(Status.ABORTED);
-                        System.out.println("Transaction " + transaction.getID()
-                                + " Aborted because it was waiting for Older transaction");
+                        /*System.out.println("Transaction " + transaction.getID()
+                                + " Aborted because it was waiting for Older transaction");*/
                         clearLocksAndUnblock(timestamp, transaction);
                         return;
                     }
@@ -476,8 +477,8 @@ public class TransactionManager {
                         waitingOperations.add(waitOperation);
                     } else {
                         transaction.setTransactionStatus(Status.ABORTED);
-                        System.out.println("Transaction " + transactionID
-                                + " Aborted because it was waiting for Older transaction.");
+                        /*System.out.println("Transaction " + transactionID
+                                + " Aborted because it was waiting for Older transaction.");*/
                         clearLocksAndUnblock(timestamp, transaction);
                         return;
                     }
@@ -493,8 +494,7 @@ public class TransactionManager {
         } else // variable is even
         {
             Boolean valueRead = false;
-            for (int i = 0; i < 10; i++) {
-                Site site = dataManager.getSites().get(i);
+            for (Site site : dataManager.getSites()) {
                 if (site.getStatus() == ServerStatus.UP) {
                     if (site.isReadLockAvailable(variable)) {
                         site.getReadLock(transaction, variable);
@@ -515,8 +515,6 @@ public class TransactionManager {
                         if (!dataManager.getSites().get(i).transactionWaits(transaction,
                                 variable)) {
                             transaction.setTransactionStatus(Status.ABORTED);
-                            System .out.println("Transaction " + transactionID
-                                    + " Aborted because it was waiting for Older transaction");
                             clearLocksAndUnblock(timestamp, transaction);
                             return;
                         }

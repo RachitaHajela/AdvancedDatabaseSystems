@@ -1,0 +1,33 @@
+// Test 3
+//
+// Main Test Idea:
+// ---------------
+// - Exercise the load balancing mechanisms a lot.  All variables should remain
+//   replicated at 3 sites even though 4 of the 10 sites go down.
+
+begin(T1)
+begin(T2)
+
+R(T1,x1); R(T2,x2)		// T1 should read from site 2, T2 reads from site 1
+R(T1,x3); R(T2,x4)		// T1 reads from site 4, T2 reads from site 1
+fail(7)
+
+fail(8)
+
+fail(9)
+
+W(T1,x1,1)				// Writes to site 2
+fail(10)
+
+recover(8)
+
+W(T2,x2,2)				// Should succeed
+recover(9)
+
+begin(T3)
+begin(T4)
+W(T3,x3,3)				// Should abort because T1 has lock on x3 (unreplicated)
+recover(7)
+
+W(T4,x4,4)				// Should succeed 
+recover(10)
