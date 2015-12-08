@@ -174,7 +174,7 @@ public class TransactionManager {
                         .getPreviousFailtime()
                         || s.getSiteAccessed().getStatus()
                                 .compareTo(ServerStatus.DOWN) == 0) {
-                    System.out.println("Transcation " + transactionID
+                    System.out.println("Transaction " + transactionID
                             + " aborted because Site "
                             + s.getSiteAccessed().getId() + " was down!");
                     transaction.abort(timestamp);
@@ -296,6 +296,8 @@ public class TransactionManager {
 
                     } else {
                         transaction.setTransactionStatus(Status.ABORTED);
+                        System .out.println("Transaction " + transaction.getID()
+                                + " Aborted because it was waiting for Older transaction");
                         clearLocksAndUnblock(currentTime, transaction);
                     }
 
@@ -354,7 +356,7 @@ public class TransactionManager {
                         
                     } else {
                         transaction.setTransactionStatus(Status.ABORTED);
-                        System.out.println("Transaction " + transactionID
+                       System .out.println("Transaction " + transactionID
                                 + " Aborted because it was waiting for Older transaction");
                         clearLocksAndUnblock(timestamp, transaction);
                         
@@ -513,8 +515,8 @@ public class TransactionManager {
                         if (!dataManager.getSites().get(i).transactionWaits(transaction,
                                 variable)) {
                             transaction.setTransactionStatus(Status.ABORTED);
-                            System.out.println("Transaction " + transactionID
-                                    + " Aborted!");
+                            System .out.println("Transaction " + transactionID
+                                    + " Aborted because it was waiting for Older transaction");
                             clearLocksAndUnblock(timestamp, transaction);
                             return;
                         }
@@ -575,8 +577,7 @@ public class TransactionManager {
         ServerStatus status = dataManager.getSites().get(siteNum - 1).getStatus();
 
         if (status == ServerStatus.UP || status == ServerStatus.RECOVERING) {
-            System.out.println("Site " + dataManager.getSites().get(siteNum - 1).getId() + ": "
-                    + dataManager.getSites().get(siteNum - 1).getVariables());
+            System.out.println(dataManager.getSites().get(siteNum - 1).getVariables());
         } else if (status == ServerStatus.DOWN) {
             System.out.println("Site " + dataManager.getSites().get(siteNum - 1).getId()
                     + ": Down");
