@@ -11,7 +11,6 @@ import nyu.edu.src.store.DataManager;
 import nyu.edu.src.store.Site;
 import nyu.edu.src.store.Site.ServerStatus;
 import nyu.edu.src.store.SiteAccessed;
-import nyu.edu.src.store.Variable;
 import nyu.edu.src.transcation.Transaction.Status;
 import nyu.edu.src.transcation.WaitOperation.OPERATION;
 
