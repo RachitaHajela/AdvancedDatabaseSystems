@@ -547,7 +547,24 @@ public class TransactionManager {
             System.out.println(transaction.getID() + " reads " + var
                     + " value: " + snapshot.get(var));
         } else {
-            // what to do if server was down at the time transaction began?
+        	 //value was not present at the time of snapshot
+        	//get value now
+        	 int varNum = Integer.parseInt(var.substring(1));
+        	 int siteNum = varNum % 10;
+             Site site = dataManager.getSites().get(siteNum);
+             if(site.getStatus() == ServerStatus.UP) {
+            	 System.out.println(transaction.getID() + " reads " + var
+                         + " value: " + site.read(var));
+             }
+             else if((site.getStatus() == ServerStatus.RECOVERING) && site.isReadLockAvailable(var)) {
+            	 System.out.println(transaction.getID() + " reads " + var
+                         + " value: " + site.read(var));
+             }
+             else {//create wait operation
+            	 WaitOperation waitOperation = new WaitOperation(transaction,
+                         OPERATION.READ, var);
+                 waitingOperations.add(waitOperation);
+             }
         }
     }
 
