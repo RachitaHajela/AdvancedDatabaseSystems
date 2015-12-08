@@ -274,11 +274,14 @@ public class TransactionManager {
         for (int i = 0; i < waitingOperations.size(); i++) {
             dummyOperations.add(waitingOperations.get(i));
         }
-
+        
         for (int i = 0; i < count; i++) {
             WaitOperation waitTask = dummyOperations.get(i);
             waitingOperations.remove(waitTask);
 
+            if(!transactionsMap.containsValue(waitTask.getWaitingTransaction())) {
+            	continue;
+            }
             // Add a comment to this line
             if (waitTask.getWaitOperation() == OPERATION.READ) {
                 readRequest(waitTask.getWaitingTransaction().getTimeStamp(),

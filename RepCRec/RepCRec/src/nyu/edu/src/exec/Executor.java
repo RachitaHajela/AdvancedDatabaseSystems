@@ -112,6 +112,6 @@ public class Executor {
         // "C:/Users/Rachita/repos/adb_repcrec_project/RepCRec/RepCRec/src/nyu/edu/src/testCases/testcase1.txt");
         Executor exec = new Executor(args[0]);
         exec.readFromInput();
-        exec.transactionManager.dump();
+      //  exec.transactionManager.dump();
     }
 }
