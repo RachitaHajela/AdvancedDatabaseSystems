@@ -28,16 +28,7 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="4" language="java" name="nyu.edu.src.store.DataManager" project="RepCRec" 
-    file="/RepCRec/src/nyu/edu/src/store/DataManager.java" binary="false" corner="BOTTOM_RIGHT">    
-    <position height="83" width="114" x="1220" y="21"/>    
-    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
-      sort-features="false" accessors="true" visibility="true">      
-      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
-      <operations public="true" package="true" protected="true" private="true" static="true"/>    
-    </display>  
-  </class>  
-  <class id="5" language="java" name="nyu.edu.src.exec.Executor" project="RepCRec" 
+  <class id="4" language="java" name="nyu.edu.src.exec.Executor" project="RepCRec" 
     file="/RepCRec/src/nyu/edu/src/exec/Executor.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="137" width="140" x="1268" y="906"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
@@ -46,7 +37,7 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <enumeration id="6" language="java" name="nyu.edu.src.lock.Lock.LockType" project="RepCRec" 
+  <enumeration id="5" language="java" name="nyu.edu.src.lock.Lock.LockType" project="RepCRec" 
     file="/RepCRec/src/nyu/edu/src/lock/Lock.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="123" y="67"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
@@ -55,7 +46,7 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </enumeration>  
-  <class id="7" language="java" name="nyu.edu.src.lock.Lock" project="RepCRec" 
+  <class id="6" language="java" name="nyu.edu.src.lock.Lock" project="RepCRec" 
     file="/RepCRec/src/nyu/edu/src/lock/Lock.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="435" y="294"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
@@ -64,7 +55,7 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="8" language="java" name="nyu.edu.src.store.Site" project="RepCRec" 
+  <class id="7" language="java" name="nyu.edu.src.store.Site" project="RepCRec" 
     file="/RepCRec/src/nyu/edu/src/store/Site.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="161" y="758"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
@@ -73,8 +64,8 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="9" language="java" name="nyu.edu.src.transcation.WaitOperation" project="RepCRec" 
-    file="/RepCRec/src/nyu/edu/src/transcation/WaitOperation.java" binary="false" corner="BOTTOM_RIGHT">    
+  <class id="8" language="java" name="nyu.edu.src.transaction.WaitOperation" project="RepCRec" 
+    file="/RepCRec/src/nyu/edu/src/transaction/WaitOperation.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="1347" y="473"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
@@ -82,8 +73,8 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <enumeration id="10" language="java" name="nyu.edu.src.transcation.WaitOperation.OPERATION" project="RepCRec" 
-    file="/RepCRec/src/nyu/edu/src/transcation/WaitOperation.java" binary="false" corner="BOTTOM_RIGHT">    
+  <enumeration id="9" language="java" name="nyu.edu.src.transaction.WaitOperation.OPERATION" project="RepCRec" 
+    file="/RepCRec/src/nyu/edu/src/transaction/WaitOperation.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="1157" y="201"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
@@ -91,8 +82,8 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </enumeration>  
-  <enumeration id="11" language="java" name="nyu.edu.src.transcation.Transaction.Status" project="RepCRec" 
-    file="/RepCRec/src/nyu/edu/src/transcation/Transaction.java" binary="false" corner="BOTTOM_RIGHT">    
+  <enumeration id="10" language="java" name="nyu.edu.src.transaction.Transaction.Status" project="RepCRec" 
+    file="/RepCRec/src/nyu/edu/src/transaction/Transaction.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="830" y="71"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
@@ -100,8 +91,8 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </enumeration>  
-  <class id="12" language="java" name="nyu.edu.src.transcation.Transaction" project="RepCRec" 
-    file="/RepCRec/src/nyu/edu/src/transcation/Transaction.java" binary="false" corner="BOTTOM_RIGHT">    
+  <class id="11" language="java" name="nyu.edu.src.transaction.Transaction" project="RepCRec" 
+    file="/RepCRec/src/nyu/edu/src/transaction/Transaction.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="860" y="364"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
       sort-features="false" accessors="true" visibility="true">      
@@ -109,113 +100,150 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
+  <class id="12" language="java" name="nyu.edu.src.store.DataManager" project="RepCRec" 
+    file="/RepCRec/src/nyu/edu/src/store/DataManager.java" binary="false" corner="BOTTOM_RIGHT">    
+    <position height="-1" width="-1" x="1313" y="96"/>    
+    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
+      sort-features="false" accessors="true" visibility="true">      
+      <attributes public="true" package="true" protected="true" private="true" static="true"/>      
+      <operations public="true" package="true" protected="true" private="true" static="true"/>    
+    </display>  
+  </class>  
   <association id="13">    
-    <end type="SOURCE" refId="12" navigable="false">      
+    <end type="SOURCE" refId="11" navigable="false">      
       <attribute id="14" name="sitesAccessed"/>      
       <multiplicity id="15" minimum="0" maximum="2147483647"/>    
     </end>    
-    <end type="TARGET" refId="8" navigable="true"/>    
+    <end type="TARGET" refId="7" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
   <nesting id="16">    
-    <end type="SOURCE" refId="7"/>    
-    <end type="TARGET" refId="6"/>  
+    <end type="SOURCE" refId="6"/>    
+    <end type="TARGET" refId="5"/>  
   </nesting>  
-  <nesting id="17">    
-    <end type="SOURCE" refId="8"/>    
+  <dependency id="17">    
+    <end type="SOURCE" refId="12"/>    
+    <end type="TARGET" refId="1"/>  
+  </dependency>  
+  <nesting id="18">    
+    <end type="SOURCE" refId="7"/>    
     <end type="TARGET" refId="1"/>  
   </nesting>  
-  <dependency id="18">    
-    <end type="SOURCE" refId="19"/>    
-    <end type="TARGET" refId="6"/>  
+  <dependency id="19">    
+    <end type="SOURCE" refId="20"/>    
+    <end type="TARGET" refId="5"/>  
   </dependency>  
-  <nesting id="20">    
-    <end type="SOURCE" refId="12"/>    
-    <end type="TARGET" refId="11"/>  
+  <nesting id="21">    
+    <end type="SOURCE" refId="11"/>    
+    <end type="TARGET" refId="10"/>  
   </nesting>  
-  <association id="21">    
-    <end type="SOURCE" refId="8" navigable="false">      
-      <attribute id="22" name="status"/>      
-      <multiplicity id="23" minimum="0" maximum="1"/>    
+  <association id="22">    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="23" name="status"/>      
+      <multiplicity id="24" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="1" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="24">    
-    <end type="SOURCE" refId="5" navigable="false">      
-      <attribute id="25" name="transactionManager"/>      
-      <multiplicity id="26" minimum="0" maximum="1"/>    
+  <association id="25">    
+    <end type="SOURCE" refId="4" navigable="false">      
+      <attribute id="26" name="transactionManager"/>      
+      <multiplicity id="27" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="2" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="27">    
-    <end type="SOURCE" refId="8" navigable="false">      
-      <attribute id="28" name="variables"/>      
-      <multiplicity id="29" minimum="0" maximum="2147483647"/>    
+  <association id="28">    
+    <end type="SOURCE" refId="7" navigable="false">      
+      <attribute id="29" name="variables"/>      
+      <multiplicity id="30" minimum="0" maximum="2147483647"/>    
     </end>    
     <end type="TARGET" refId="3" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <nesting id="30">    
-    <end type="SOURCE" refId="9"/>    
-    <end type="TARGET" refId="10"/>  
+  <nesting id="31">    
+    <end type="SOURCE" refId="8"/>    
+    <end type="TARGET" refId="9"/>  
   </nesting>  
-  <association id="31">    
-    <end type="SOURCE" refId="12" navigable="false">      
-      <attribute id="32" name="transactionStatus"/>      
-      <multiplicity id="33" minimum="0" maximum="1"/>    
+  <association id="32">    
+    <end type="SOURCE" refId="11" navigable="false">      
+      <attribute id="33" name="transactionStatus"/>      
+      <multiplicity id="34" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="10" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <association id="35">    
+    <end type="SOURCE" refId="8" navigable="false">      
+      <attribute id="36" name="waitingTransaction"/>      
+      <multiplicity id="37" minimum="0" maximum="1"/>    
     </end>    
     <end type="TARGET" refId="11" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="34">    
-    <end type="SOURCE" refId="9" navigable="false">      
-      <attribute id="35" name="waitingTransaction"/>      
-      <multiplicity id="36" minimum="0" maximum="1"/>    
+  <association id="38">    
+    <end type="SOURCE" refId="6" navigable="false">      
+      <attribute id="39" name="transaction"/>      
+      <multiplicity id="40" minimum="0" maximum="1"/>    
     </end>    
-    <end type="TARGET" refId="12" navigable="true"/>    
+    <end type="TARGET" refId="11" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <association id="37">    
-    <end type="SOURCE" refId="7" navigable="false">      
-      <attribute id="38" name="transaction"/>      
-      <multiplicity id="39" minimum="0" maximum="1"/>    
+  <association id="41">    
+    <end type="SOURCE" refId="12" navigable="false">      
+      <attribute id="42" name="sites"/>      
+      <multiplicity id="43" minimum="0" maximum="2147483647"/>    
     </end>    
-    <end type="TARGET" refId="12" navigable="true"/>    
+    <end type="TARGET" refId="7" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="40">    
-    <end type="SOURCE" refId="8"/>    
-    <end type="TARGET" refId="7"/>  
-  </dependency>  
-  <dependency id="41">    
-    <end type="SOURCE" refId="42"/>    
-    <end type="TARGET" refId="10"/>  
-  </dependency>  
-  <dependency id="43">    
-    <end type="SOURCE" refId="42"/>    
-    <end type="TARGET" refId="11"/>  
-  </dependency>  
   <dependency id="44">    
-    <end type="SOURCE" refId="8"/>    
+    <end type="SOURCE" refId="7"/>    
     <end type="TARGET" refId="6"/>  
   </dependency>  
-  <association id="45">    
-    <end type="SOURCE" refId="7" navigable="false">      
-      <attribute id="46" name="type"/>      
-      <multiplicity id="47" minimum="0" maximum="1"/>    
+  <dependency id="45">    
+    <end type="SOURCE" refId="46"/>    
+    <end type="TARGET" refId="9"/>  
+  </dependency>  
+  <dependency id="47">    
+    <end type="SOURCE" refId="12"/>    
+    <end type="TARGET" refId="3"/>  
+  </dependency>  
+  <association id="48">    
+    <end type="SOURCE" refId="46" navigable="false">      
+      <attribute id="49" name="dataManager"/>      
+      <multiplicity id="50" minimum="0" maximum="1"/>    
     </end>    
-    <end type="TARGET" refId="6" navigable="true"/>    
+    <end type="TARGET" refId="12" navigable="true"/>    
     <display labels="true" multiplicity="true"/>  
   </association>  
-  <dependency id="48">    
-    <end type="SOURCE" refId="8"/>    
+  <dependency id="51">    
+    <end type="SOURCE" refId="52"/>    
+    <end type="TARGET" refId="12"/>  
+  </dependency>  
+  <dependency id="53">    
+    <end type="SOURCE" refId="46"/>    
+    <end type="TARGET" refId="10"/>  
+  </dependency>  
+  <dependency id="54">    
+    <end type="SOURCE" refId="7"/>    
+    <end type="TARGET" refId="5"/>  
+  </dependency>  
+  <association id="55">    
+    <end type="SOURCE" refId="6" navigable="false">      
+      <attribute id="56" name="type"/>      
+      <multiplicity id="57" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="5" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
+  <dependency id="58">    
+    <end type="SOURCE" refId="7"/>    
     <end type="TARGET" refId="2"/>  
   </dependency>  
-  <dependency id="49">    
-    <end type="SOURCE" refId="19"/>    
-    <end type="TARGET" refId="7"/>  
+  <dependency id="59">    
+    <end type="SOURCE" refId="20"/>    
+    <end type="TARGET" refId="6"/>  
   </dependency>  
   <classifier-display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
     sort-features="false" accessors="true" visibility="true">    

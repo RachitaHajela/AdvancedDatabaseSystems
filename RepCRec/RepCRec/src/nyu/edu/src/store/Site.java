@@ -6,8 +6,8 @@ import java.util.HashSet;
 
 import nyu.edu.src.lock.Lock;
 import nyu.edu.src.lock.Lock.LockType;
-import nyu.edu.src.transcation.Transaction;
-import nyu.edu.src.transcation.TransactionManager;
+import nyu.edu.src.transaction.Transaction;
+import nyu.edu.src.transaction.TransactionManager;
 
 /**
  * This class represents the Server (or site) where the data is being stored

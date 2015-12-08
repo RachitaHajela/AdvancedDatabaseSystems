@@ -1,4 +1,4 @@
-package nyu.edu.src.transcation;
+package nyu.edu.src.transaction;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,8 +12,8 @@ import nyu.edu.src.store.DataManager;
 import nyu.edu.src.store.Site;
 import nyu.edu.src.store.Site.ServerStatus;
 import nyu.edu.src.store.SiteAccessed;
-import nyu.edu.src.transcation.Transaction.Status;
-import nyu.edu.src.transcation.WaitOperation.OPERATION;
+import nyu.edu.src.transaction.Transaction.Status;
+import nyu.edu.src.transaction.WaitOperation.OPERATION;
 
 public class TransactionManager {
 

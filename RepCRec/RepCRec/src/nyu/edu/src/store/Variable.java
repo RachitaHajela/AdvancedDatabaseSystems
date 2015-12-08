@@ -1,6 +1,6 @@
 package nyu.edu.src.store;
 
-import nyu.edu.src.transcation.TransactionManager;
+import nyu.edu.src.transaction.TransactionManager;
 
 public class Variable {
 

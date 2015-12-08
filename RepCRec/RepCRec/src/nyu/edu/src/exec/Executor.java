@@ -3,7 +3,7 @@ package nyu.edu.src.exec;
 import java.io.BufferedReader;
 import java.io.FileReader;
 
-import nyu.edu.src.transcation.TransactionManager;
+import nyu.edu.src.transaction.TransactionManager;
 
 public class Executor {
 

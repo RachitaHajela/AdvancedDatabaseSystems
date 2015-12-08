@@ -1,6 +1,6 @@
 package nyu.edu.src.lock;
 
-import nyu.edu.src.transcation.Transaction;
+import nyu.edu.src.transaction.Transaction;
 
 /**
  */
