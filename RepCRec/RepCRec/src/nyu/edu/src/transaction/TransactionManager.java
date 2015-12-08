@@ -15,7 +15,8 @@ import nyu.edu.src.transaction.Transaction.Status;
 import nyu.edu.src.transaction.WaitOperation.OPERATION;
 
 /**
- * Manages all the operations related to the transactions. This is the crux of the whole system. It never fails.
+ * Manages all the operations related to the transactions. This is the crux of
+ * the whole system. It never fails.
  * 
  * @author Rachita & Anto
  *
@@ -24,22 +25,22 @@ public class TransactionManager {
 
     public static final int numberOfTotalSites = 10;
     public static final int numberOfTotalVariables = 20;
-    
+
     private DataManager dataManager;
     private Map<String, Transaction> transactionsMap;
     private List<WaitOperation> waitingOperations;
     int currentTime = 1;
-    
+
     public TransactionManager() {
         dataManager = new DataManager();
         transactionsMap = new HashMap<String, Transaction>();
         waitingOperations = new ArrayList<WaitOperation>();
     }
-    
+
     public DataManager getDataManager() {
         return dataManager;
     }
-    
+
     /**
      * increases the time by one. (equivalent to 1 tick)
      * 
@@ -61,9 +62,10 @@ public class TransactionManager {
      * @author Rachita & Anto
      */
     public void commitRequest(Transaction transaction, int timestamp) {
-        /*System.out.println("COMMIT : timestamp = " + timestamp
-                + ", transaction = " + transaction.getID());
-*/
+        /*
+         * System.out.println("COMMIT : timestamp = " + timestamp +
+         * ", transaction = " + transaction.getID());
+         */
         HashMap<String, Integer> uncommitted = transaction
                 .getUncommitedVariables();
         for (String variable : uncommitted.keySet()) {
@@ -92,8 +94,10 @@ public class TransactionManager {
      * @author Rachita & Anto
      */
     public void begin(int timeStamp, String transactionID) {
-        /*System.out.println("BEGIN : timestamp = " + timeStamp
-                + ", transaction = " + transactionID);*/
+        /*
+         * System.out.println("BEGIN : timestamp = " + timeStamp +
+         * ", transaction = " + transactionID);
+         */
         Transaction trans = new Transaction(transactionID, timeStamp, false);
         transactionsMap.put(transactionID, trans);
     }
@@ -110,8 +114,10 @@ public class TransactionManager {
      * @author Rachita & Anto
      */
     public void beginRO(int timeStamp, String transactionID) {
-        /*System.out.println("BEGINRO : timestamp = " + timeStamp
-                + ", transaction = " + transactionID);*/
+        /*
+         * System.out.println("BEGINRO : timestamp = " + timeStamp +
+         * ", transaction = " + transactionID);
+         */
         Transaction trans = new Transaction(transactionID, timeStamp, true);
         trans.setSnapshotIfReadOnly(takeSnapshot());
         transactionsMap.put(transactionID, trans);
@@ -130,7 +136,8 @@ public class TransactionManager {
         for (int i = 0; i < numberOfTotalSites; i = i + 2) {
             if (dataManager.getSites().get(i).getStatus() == ServerStatus.UP) {
                 for (int var = 2; var <= 20; var = var + 2) {
-                    snapshot.put("x" + var, dataManager.getSites().get(i).read(var));
+                    snapshot.put("x" + var,
+                            dataManager.getSites().get(i).read(var));
                 }
                 break;
             }
@@ -140,7 +147,8 @@ public class TransactionManager {
         for (int i = 1; i < 10; i = i + 2) {
             if (dataManager.getSites().get(i).getStatus() == ServerStatus.UP) {
                 snapshot.put("x" + i, dataManager.getSites().get(i).read(i));
-                snapshot.put("x" + (i + 10), dataManager.getSites().get(i).read(i + 10));
+                snapshot.put("x" + (i + 10), dataManager.getSites().get(i)
+                        .read(i + 10));
             }
         }
         return snapshot;
@@ -201,7 +209,8 @@ public class TransactionManager {
     }
 
     /**
-     * Clears all the locks held by the transaction and unblocks any waiting operation
+     * Clears all the locks held by the transaction and unblocks any waiting
+     * operation
      * 
      * @param timeStamp
      *            - the time moment that the Transaction comes to this method
@@ -255,13 +264,14 @@ public class TransactionManager {
         for (int i = 0; i < waitingOperations.size(); i++) {
             dummyOperations.add(waitingOperations.get(i));
         }
-        
+
         for (int i = 0; i < count; i++) {
             WaitOperation waitTask = dummyOperations.get(i);
             waitingOperations.remove(waitTask);
 
-            if(!transactionsMap.containsValue(waitTask.getWaitingTransaction())) {
-            	continue;
+            if (!transactionsMap
+                    .containsValue(waitTask.getWaitingTransaction())) {
+                continue;
             }
             // Add a comment to this line
             if (waitTask.getWaitOperation() == OPERATION.READ) {
@@ -275,8 +285,8 @@ public class TransactionManager {
                 String variable = waitTask.getVariable();
                 if (site.getStatus() == ServerStatus.UP
                         || site.getStatus() == ServerStatus.RECOVERING) {
-                	 // take lock if not then wait or die
-                	
+                    // take lock if not then wait or die
+
                     if (site.isWriteLockAvailable(transaction, variable)) {
                         site.getWriteLock(transaction, variable);
                         SiteAccessed siteAccessed = new SiteAccessed(site,
@@ -284,37 +294,44 @@ public class TransactionManager {
                         transaction.addToSitesAccessed(siteAccessed);
 
                         // check if transaction is waiting for more locks
-                        
+
                         for (int j = i; j < count; j++) {
                             if (dummyOperations.get(j).getWaitingTransaction() == transaction) {
                             }
                         }
-                       
+
                         transaction.addToUncommitedVariables(variable,
                                 waitTask.getValue());
                     }
 
-                 else { // lock not available
-                    if (site.transactionWaits(transaction, variable)) {
-                        transaction.setTransactionStatus(Status.WAITING);
-                        WaitOperation waitOperation = new WaitOperation(
-                                transaction, OPERATION.WRITE, variable, site,
-                                waitTask.getValue());
-                        waitingOperations.add(waitOperation);
+                    else { // lock not available
+                        if (site.transactionWaits(transaction, variable)) {
+                            transaction.setTransactionStatus(Status.WAITING);
+                            WaitOperation waitOperation = new WaitOperation(
+                                    transaction, OPERATION.WRITE, variable,
+                                    site, waitTask.getValue());
+                            waitingOperations.add(waitOperation);
 
-                    } else {
-                        transaction.setTransactionStatus(Status.ABORTED);
-                       /* System .out.println("Transaction " + transaction.getID()
-                                + " Aborted because it was waiting for Older transaction");*/
-                        clearLocksAndUnblock(currentTime, transaction);
+                        } else {
+                            transaction.setTransactionStatus(Status.ABORTED);
+                            /*
+                             * System .out.println("Transaction " +
+                             * transaction.getID() +
+                             * " Aborted because it was waiting for Older transaction"
+                             * );
+                             */
+                            clearLocksAndUnblock(currentTime, transaction);
+                        }
+
                     }
-
-                }
                 } else {
-                	transaction.setTransactionStatus(Status.ABORTED);
-                     System .out.println("Transaction " + transaction.getID()
-                             + " Aborted because it was waiting for a lock but site "+site+"failed");
-                     clearLocksAndUnblock(currentTime, transaction);
+                    transaction.setTransactionStatus(Status.ABORTED);
+                    System.out
+                            .println("Transaction "
+                                    + transaction.getID()
+                                    + " Aborted because it was waiting for a lock but site "
+                                    + site + "failed");
+                    clearLocksAndUnblock(currentTime, transaction);
                 }
             }
 
@@ -338,9 +355,11 @@ public class TransactionManager {
     public void writeRequest(int timestamp, String transactionID,
             String variable, String val) {
         int value = Integer.parseInt(val);
-        /*System.out.println("WRITE : timestamp = " + timestamp
-                + ", transaction = " + transactionID + ", variable = "
-                + variable + ", value = " + value);*/
+        /*
+         * System.out.println("WRITE : timestamp = " + timestamp +
+         * ", transaction = " + transactionID + ", variable = " + variable +
+         * ", value = " + value);
+         */
 
         Transaction transaction = transactionsMap.get(transactionID);
         int varNum = Integer.parseInt(variable.substring(1));
@@ -366,13 +385,16 @@ public class TransactionManager {
                                 transaction, OPERATION.WRITE, variable, site,
                                 value);
                         waitingOperations.add(waitOperation);
-                        
+
                     } else {
                         transaction.setTransactionStatus(Status.ABORTED);
-                       /*System .out.println("Transaction " + transactionID
-                                + " Aborted because it was waiting for Older transaction");*/
+                        /*
+                         * System .out.println("Transaction " + transactionID +
+                         * " Aborted because it was waiting for Older transaction"
+                         * );
+                         */
                         clearLocksAndUnblock(timestamp, transaction);
-                        
+
                     }
 
                 }
@@ -427,8 +449,12 @@ public class TransactionManager {
                         allLocksAcquired = false;
                     } else {
                         transaction.setTransactionStatus(Status.ABORTED);
-                        /*System.out.println("Transaction " + transaction.getID()
-                                + " Aborted because it was waiting for Older transaction");*/
+                        /*
+                         * System.out.println("Transaction " +
+                         * transaction.getID() +
+                         * " Aborted because it was waiting for Older transaction"
+                         * );
+                         */
                         clearLocksAndUnblock(timestamp, transaction);
                         return;
                     }
@@ -454,9 +480,10 @@ public class TransactionManager {
      * @author Rachita & Anto
      */
     public void readRequest(int timestamp, String transactionID, String variable) {
-        /*System.out.println("READ : timestamp = " + timestamp
-                + ", transaction = " + transactionID + ", variable = "
-                + variable);*/
+        /*
+         * System.out.println("READ : timestamp = " + timestamp +
+         * ", transaction = " + transactionID + ", variable = " + variable);
+         */
 
         Transaction transaction = transactionsMap.get(transactionID);
         int varNum = Integer.parseInt(variable.substring(1));
@@ -489,8 +516,11 @@ public class TransactionManager {
                         waitingOperations.add(waitOperation);
                     } else {
                         transaction.setTransactionStatus(Status.ABORTED);
-                        /*System.out.println("Transaction " + transactionID
-                                + " Aborted because it was waiting for Older transaction.");*/
+                        /*
+                         * System.out.println("Transaction " + transactionID +
+                         * " Aborted because it was waiting for Older transaction."
+                         * );
+                         */
                         clearLocksAndUnblock(timestamp, transaction);
                         return;
                     }
@@ -524,8 +554,8 @@ public class TransactionManager {
                 // lock.
                 for (int i = 0; i < 10; i++) {
                     if (dataManager.getSites().get(i).getStatus() == ServerStatus.UP) {
-                        if (!dataManager.getSites().get(i).transactionWaits(transaction,
-                                variable)) {
+                        if (!dataManager.getSites().get(i)
+                                .transactionWaits(transaction, variable)) {
                             transaction.setTransactionStatus(Status.ABORTED);
                             clearLocksAndUnblock(timestamp, transaction);
                             return;
@@ -558,24 +588,23 @@ public class TransactionManager {
             System.out.println(transaction.getID() + " reads " + var
                     + " value: " + snapshot.get(var));
         } else {
-        	 //value was not present at the time of snapshot
-        	//get value now
-        	 int varNum = Integer.parseInt(var.substring(1));
-        	 int siteNum = varNum % 10;
-             Site site = dataManager.getSites().get(siteNum);
-             if(site.getStatus() == ServerStatus.UP) {
-            	 System.out.println(transaction.getID() + " reads " + var
-                         + " value: " + site.read(var));
-             }
-             else if((site.getStatus() == ServerStatus.RECOVERING) && site.isReadLockAvailable(var)) {
-            	 System.out.println(transaction.getID() + " reads " + var
-                         + " value: " + site.read(var));
-             }
-             else {//create wait operation
-            	 WaitOperation waitOperation = new WaitOperation(transaction,
-                         OPERATION.READ, var);
-                 waitingOperations.add(waitOperation);
-             }
+            // value was not present at the time of snapshot
+            // get value now
+            int varNum = Integer.parseInt(var.substring(1));
+            int siteNum = varNum % 10;
+            Site site = dataManager.getSites().get(siteNum);
+            if (site.getStatus() == ServerStatus.UP) {
+                System.out.println(transaction.getID() + " reads " + var
+                        + " value: " + site.read(var));
+            } else if ((site.getStatus() == ServerStatus.RECOVERING)
+                    && site.isReadLockAvailable(var)) {
+                System.out.println(transaction.getID() + " reads " + var
+                        + " value: " + site.read(var));
+            } else {// create wait operation
+                WaitOperation waitOperation = new WaitOperation(transaction,
+                        OPERATION.READ, var);
+                waitingOperations.add(waitOperation);
+            }
         }
     }
 
@@ -583,9 +612,10 @@ public class TransactionManager {
      * gives the committed values of all copies of all variables at all sites,
      * sorted per site.
      * 
-     * If a site is in recovery state, the variables which are not unique to the site of which
-     * have not been written to show the value of last commit before the failure. (note this value is not
-     * available for read by the transactions)
+     * If a site is in recovery state, the variables which are not unique to the
+     * site of which have not been written to show the value of last commit
+     * before the failure. (note this value is not available for read by the
+     * transactions)
      * 
      * @author Rachita & Anto
      */
@@ -599,9 +629,10 @@ public class TransactionManager {
     /**
      * gives the committed values of all copies of all variables at site siteNUm
      * 
-     * If a site is in recovery state, the variables which are not unique to the site of which
-     * have not been written to show the value of last commit before the failure. (note this value is not
-     * available for read by the transactions)
+     * If a site is in recovery state, the variables which are not unique to the
+     * site of which have not been written to show the value of last commit
+     * before the failure. (note this value is not available for read by the
+     * transactions)
      * 
      * @param siteNum
      *            - identifier of the site that we are dumping from
@@ -610,12 +641,15 @@ public class TransactionManager {
      */
     public void dump(int siteNum) {
         System.out.println("DUMP : siteNum = " + siteNum);
-        ServerStatus status = dataManager.getSites().get(siteNum - 1).getStatus();
+        ServerStatus status = dataManager.getSites().get(siteNum - 1)
+                .getStatus();
 
         if (status == ServerStatus.UP || status == ServerStatus.RECOVERING) {
-            System.out.println(dataManager.getSites().get(siteNum - 1).getVariables());
+            System.out.println(dataManager.getSites().get(siteNum - 1)
+                    .getVariables());
         } else if (status == ServerStatus.DOWN) {
-            System.out.println("Site " + dataManager.getSites().get(siteNum - 1).getId()
+            System.out.println("Site "
+                    + dataManager.getSites().get(siteNum - 1).getId()
                     + ": Down");
         }
     }
@@ -623,9 +657,10 @@ public class TransactionManager {
     /**
      * gives the committed values of all copies of variable var at all sites.
      * 
-     * If a site is in recovery state, the variables which are not unique to the site of which
-     * have not been written to show the value of last commit before the failure. (note this value is not
-     * available for read by the transactions)
+     * If a site is in recovery state, the variables which are not unique to the
+     * site of which have not been written to show the value of last commit
+     * before the failure. (note this value is not available for read by the
+     * transactions)
      * 
      * @param var
      *            - the variable that we are dumping from all sites that contain

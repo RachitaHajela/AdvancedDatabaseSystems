@@ -65,8 +65,10 @@ public class DataManager {
         Site site = getSites().get(siteID - 1);
 
         if (site != null) {
-           /* System.out.println("FAIL : timestamp = " + timestamp
-                    + ", siteID = " + siteID);*/
+            /*
+             * System.out.println("FAIL : timestamp = " + timestamp +
+             * ", siteID = " + siteID);
+             */
             site.failure(timestamp);
         }
     }
@@ -84,7 +86,7 @@ public class DataManager {
     public void recover(int siteID) {
         Site site = getSites().get(siteID - 1);
         if (site != null) {
-           // System.out.println("RECOVER : siteID = " + siteID);
+            // System.out.println("RECOVER : siteID = " + siteID);
             site.recover();
         }
     }

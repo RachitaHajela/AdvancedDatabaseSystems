@@ -37,7 +37,7 @@ public class Executor {
             int timestamp = 1;
 
             while (command != null) {
-              //  System.out.println(command);
+                // System.out.println(command);
                 if (command.startsWith("//") || command.isEmpty()) {
                     command = br.readLine();
                     continue;
@@ -63,7 +63,8 @@ public class Executor {
                         transactionManager.end(timestamp, inputToFunction);
                     } else if (functionToDo.equalsIgnoreCase("fail")) {
                         int siteID = Integer.parseInt(inputToFunction);
-                        transactionManager.getDataManager().fail(timestamp, siteID);
+                        transactionManager.getDataManager().fail(timestamp,
+                                siteID);
                     } else if (functionToDo.equalsIgnoreCase("recover")) {
                         int siteID = Integer.parseInt(inputToFunction);
                         transactionManager.getDataManager().recover(siteID);

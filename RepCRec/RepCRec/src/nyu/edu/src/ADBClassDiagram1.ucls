@@ -238,10 +238,6 @@
     <display labels="true" multiplicity="true"/>  
   </association>  
   <dependency id="58">    
-    <end type="SOURCE" refId="7"/>    
-    <end type="TARGET" refId="2"/>  
-  </dependency>  
-  <dependency id="59">    
     <end type="SOURCE" refId="20"/>    
     <end type="TARGET" refId="6"/>  
   </dependency>  

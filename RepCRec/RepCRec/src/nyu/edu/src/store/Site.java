@@ -63,7 +63,9 @@ public class Site {
 
     /**
      * adds a particular variable to the server
-     * @param variable -variable to be added
+     * 
+     * @param variable
+     *            -variable to be added
      * 
      * @author Rachita & Anto
      */
@@ -74,8 +76,10 @@ public class Site {
     /**
      * Creates a new variable from id and value and adds it to the site
      * 
-     * @param id - id of the variable
-     * @param value - value of the variable
+     * @param id
+     *            - id of the variable
+     * @param value
+     *            - value of the variable
      * 
      * @author Rachita & Anto
      */
@@ -86,7 +90,8 @@ public class Site {
     /**
      * returns true if the variable with the given id is present on the site
      * 
-     * @param id id of the variable
+     * @param id
+     *            id of the variable
      * @return true or false
      * 
      * @author Rachita & Anto
@@ -98,7 +103,8 @@ public class Site {
     /**
      * handles the failure of the site.
      * 
-     * @param timestamp - the time at which failure happened
+     * @param timestamp
+     *            - the time at which failure happened
      * 
      * @author Rachita & Anto
      */
@@ -158,7 +164,8 @@ public class Site {
     /**
      * returns the current value of the variable.
      * 
-     * @param id -id of the variable
+     * @param id
+     *            -id of the variable
      * @return current value
      * 
      * @author Rachita & Anto
@@ -170,7 +177,8 @@ public class Site {
     /**
      * returns the current value of the variable.
      * 
-     * @param id variable num
+     * @param id
+     *            variable num
      * 
      * @return variable's value
      * 
@@ -183,13 +191,15 @@ public class Site {
     /**
      * writes the value of the variable to the server
      * 
-     * @param id - variable id
-     * @param value - value to be committed
+     * @param id
+     *            - variable id
+     * @param value
+     *            - value to be committed
      * 
      * @author Rachita & Anto
      */
     public void write(String id, int value) {
-    	if (status.equals(ServerStatus.RECOVERING)) {
+        if (status.equals(ServerStatus.RECOVERING)) {
             variableHasRecovered.add(id);
             if (variableHasRecovered.size() == variables.size()) {
                 setStatus(ServerStatus.UP);
@@ -208,22 +218,26 @@ public class Site {
     }
 
     /**
-     * checks if a transaction should wait for the other transaction to finish or it should abort
+     * checks if a transaction should wait for the other transaction to finish
+     * or it should abort
      * 
-     * @param transaction -the transaction
-     * @param variable -the variable on which it wants lock
+     * @param transaction
+     *            -the transaction
+     * @param variable
+     *            -the variable on which it wants lock
      * @return -true or false
      * 
      * @author Rachita & Anto
      * 
      */
     public boolean transactionWaits(Transaction transaction, String variable) {
-        if(!(this.status == ServerStatus.DOWN)) {
+        if (!(this.status == ServerStatus.DOWN)) {
             ArrayList<Lock> locks = lockTable.get(variable);
             Transaction transHoldingLock = locks.get(0).getTransaction();
             if (transHoldingLock.getTimeStamp() < transaction.getTimeStamp()) {
-            	 System .out.println("Transaction " + transaction.getID()
-                         + " Aborted because " + transHoldingLock.getID()+" has  lock on "+variable);
+                System.out.println("Transaction " + transaction.getID()
+                        + " Aborted because " + transHoldingLock.getID()
+                        + " has  lock on " + variable);
                 return false;
             }
         }
@@ -233,7 +247,8 @@ public class Site {
     /**
      * checks if read lock can be acquired on the variable
      * 
-     * @param variable -the variable on which read lock is required
+     * @param variable
+     *            -the variable on which read lock is required
      * @return - true or false
      * 
      * @author Rachita & Anto
@@ -259,8 +274,10 @@ public class Site {
     /**
      * the transaction takes the read lock on the variable
      * 
-     * @param trans -the transaction
-     * @param variable -the variable on which read lock is taken
+     * @param trans
+     *            -the transaction
+     * @param variable
+     *            -the variable on which read lock is taken
      * 
      * @author Rachita & Anto
      */
@@ -281,9 +298,11 @@ public class Site {
     /**
      * checks if a write lock can be taken by the transaction on the variable
      * 
-     * @param transaction - the transaction
-     * @param variable  -the variable
-     * @return  true or false
+     * @param transaction
+     *            - the transaction
+     * @param variable
+     *            -the variable
+     * @return true or false
      * 
      * @author Rachita & Anto
      */
@@ -306,8 +325,10 @@ public class Site {
     /**
      * transaction takes the write lock on the variable
      * 
-     * @param transaction - the transaction
-     * @param variable -the variable
+     * @param transaction
+     *            - the transaction
+     * @param variable
+     *            -the variable
      * 
      * @author Rachita & Anto
      */
@@ -324,12 +345,15 @@ public class Site {
         }
 
     }
-    
+
     /**
-     * returns true if transaction already has a write lock on the variable false otherwise
+     * returns true if transaction already has a write lock on the variable
+     * false otherwise
      * 
-     * @param transaction -the transaction
-     * @param variable -the variable
+     * @param transaction
+     *            -the transaction
+     * @param variable
+     *            -the variable
      * @return true or false
      * 
      * @author Rachita & Anto
@@ -337,7 +361,8 @@ public class Site {
     public boolean isWriteLockTaken(Transaction transaction, String variable) {
         if (lockTable.containsKey(variable)) {
             Lock lock = lockTable.get(variable).get(0);
-            if (lock.getTransaction().equals(transaction) && lock.getType().equals(LockType.WRITE)) {
+            if (lock.getTransaction().equals(transaction)
+                    && lock.getType().equals(LockType.WRITE)) {
                 return true;
             }
         }
