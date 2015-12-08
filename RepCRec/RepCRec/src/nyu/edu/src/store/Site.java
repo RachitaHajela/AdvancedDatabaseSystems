@@ -9,6 +9,12 @@ import nyu.edu.src.lock.Lock.LockType;
 import nyu.edu.src.transcation.Transaction;
 import nyu.edu.src.transcation.TransactionManager;
 
+/**
+ * This class represents the Server (or site) where the data is being stored
+ * 
+ * @author Rachita & Anto
+ *
+ */
 public class Site {
 
     private int id;
@@ -55,22 +61,46 @@ public class Site {
         this.status = status;
     }
 
+    /**
+     * adds a particular variable to the server
+     * @param variable -variable to be added
+     * 
+     * @author Rachita & Anto
+     */
     public void addVariableToSite(Variable variable) {
         variables.put(variable.getId(), variable);
     }
 
+    /**
+     * Creates a new variable from id and value and adds it to the site
+     * @param id - id of the variable
+     * @param value - value of the variable
+     * 
+     * @author Rachita & Anto
+     */
     public void addVariableToSite(int id, int value) {
         variables.put(id, new Variable(id, value));
     }
 
-    public void addVariableToSite(String id, int value) {
-        addVariableToSite(getWithoutStartingX(id), value);
-    }
-
+    /**
+     * returns true if the variable with the given id is present on the site
+     * 
+     * @param id id of the variable
+     * @return true or false
+     * 
+     * @author Rachita & Anto
+     */
     public boolean variableExistsOnThisSite(String id) {
         return variables.containsKey(getWithoutStartingX(id));
     }
 
+    /**
+     * handles the failure of the site.
+     * 
+     * @param timestamp - the time at which failure happened
+     * 
+     * @author Rachita & Anto
+     */
     public void failure(int timestamp) {
         status = ServerStatus.DOWN;
         lockTable.clear();
@@ -78,6 +108,11 @@ public class Site {
         previousFailtime = timestamp;
     }
 
+    /**
+     * handles recovery of the site
+     * 
+     * @author Rachita & Anto
+     */
     public void recover() {
         int id = this.getId();
         if (id % 2 == 0) {
@@ -88,6 +123,14 @@ public class Site {
 
     }
 
+    /**
+     * returns all the variables and their value at the site
+     * 
+     * @return String containing all the data
+     * 
+     * @author Rachita & Anto
+     * 
+     */
     public String getVariables() {
 
         StringBuilder str = new StringBuilder();
@@ -102,7 +145,7 @@ public class Site {
         return str.toString();
     }
 
-    public String getVariable(int variableID) {
+    public String getVariableString(int variableID) {
         if (!variables.containsKey(variableID)) {
             return "ignore";
         }
@@ -111,29 +154,50 @@ public class Site {
                 + " ";
     }
 
+    /**
+     * returns the current value of the variable.
+     * 
+     * @param id -id of the variable
+     * @return current value
+     * 
+     * @author Rachita & Anto
+     */
     public int read(String id) {
         return read(getWithoutStartingX(id));
     }
 
+    /**
+     * returns the current value of the variable.
+     * 
+     * @param id variable num
+     * 
+     * @return variable's value
+     * 
+     * @author Rachita & Anto
+     */
     public int read(int id) {
         return variables.get(id).getValue();
     }
 
-    public void write(int id, int value) {
-        if (status.equals(ServerStatus.RECOVERING)) {
-            variableHasRecovered.add("x" + id);
+    /**
+     * writes the value of the variable to the server
+     * 
+     * @param id - variable id
+     * @param value - value to be committed
+     * 
+     * @author Rachita & Anto
+     */
+    public void write(String id, int value) {
+    	if (status.equals(ServerStatus.RECOVERING)) {
+            variableHasRecovered.add(id);
             if (variableHasRecovered.size() == variables.size()) {
                 setStatus(ServerStatus.UP);
             }
         }
-        addVariableToSite(id, value);
+        addVariableToSite(getWithoutStartingX(id), value);
     }
 
-    public void write(String id, int value) {
-        write(getWithoutStartingX(id), value);
-    }
-
-    public int getWithoutStartingX(String id) {
+    private int getWithoutStartingX(String id) {
         if (id.startsWith("x")) {
             int idWithoutX = Integer.parseInt(id.substring(1));
             return idWithoutX;
@@ -142,6 +206,16 @@ public class Site {
         return -1;
     }
 
+    /**
+     * checks if a transaction should wait for the other transaction to finish or it should abort
+     * 
+     * @param transaction -the transaction
+     * @param variable -the variable on which it wants lock
+     * @return -true or false
+     * 
+     * @author Rachita & Anto
+     * 
+     */
     public boolean transactionWaits(Transaction transaction, String variable) {
         if(!(this.status == ServerStatus.DOWN)) {
             ArrayList<Lock> locks = lockTable.get(variable);
@@ -153,6 +227,14 @@ public class Site {
         return true;
     }
 
+    /**
+     * checks if read lock can be acquired on the variable
+     * 
+     * @param variable -the variable on which read lock is required
+     * @return - true or false
+     * 
+     * @author Rachita & Anto
+     */
     public boolean isReadLockAvailable(String variable) {
         if (status.equals(ServerStatus.RECOVERING)
                 && !variableHasRecovered.contains(variable)) {
@@ -171,6 +253,14 @@ public class Site {
         }
     }
 
+    /**
+     * the transaction takes the read lock on the variable
+     * 
+     * @param trans -the transaction
+     * @param variable -the variable on which read lock is taken
+     * 
+     * @author Rachita & Anto
+     */
     public void getReadLock(Transaction trans, String variable) {
         if (lockTable.containsKey(variable)) {
             Lock lock = new Lock(trans, LockType.READ);
@@ -185,6 +275,15 @@ public class Site {
         }
     }
 
+    /**
+     * checks if a write lock can be taken by the transaction on the variable
+     * 
+     * @param transaction - the transaction
+     * @param variable  -the variable
+     * @return  true or false
+     * 
+     * @author Rachita & Anto
+     */
     public boolean isWriteLockAvailable(Transaction transaction, String variable) {
         if (!lockTable.containsKey(variable)) {
             return true;
@@ -201,6 +300,14 @@ public class Site {
         return false;
     }
 
+    /**
+     * transaction takes the write lock on the variable
+     * 
+     * @param transaction - the transaction
+     * @param variable -the variable
+     * 
+     * @author Rachita & Anto
+     */
     public void getWriteLock(Transaction transaction, String variable) {
         if (!lockTable.containsKey(variable)) {
             Lock lock = new Lock(transaction, LockType.WRITE);
@@ -216,11 +323,13 @@ public class Site {
     }
     
     /**
-     * returns true if transaction has a write lock on the variable
-     * @param transaction
-     * @param variable
+     * returns true if transaction already has a write lock on the variable false otherwise
+     * 
+     * @param transaction -the transaction
+     * @param variable -the variable
      * @return true or false
-     * @author RHAJELA
+     * 
+     * @author Rachita & Anto
      */
     public boolean isWriteLockTaken(Transaction transaction, String variable) {
         if (lockTable.containsKey(variable)) {

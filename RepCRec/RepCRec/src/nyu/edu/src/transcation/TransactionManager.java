@@ -662,10 +662,10 @@ public class TransactionManager {
             ServerStatus status = s.getStatus();
 
             if (status == ServerStatus.UP || status == ServerStatus.RECOVERING) {
-                String val = s.getVariable(variableID);
+                String val = s.getVariableString(variableID);
                 if (!val.equalsIgnoreCase("ignore")) {
                     System.out.println("SITE " + s.getId() + " : "
-                            + s.getVariable(variableID));
+                            + s.getVariableString(variableID));
                 }
             } else if (status == ServerStatus.DOWN) {
                 System.out.println("Server is Down!");
