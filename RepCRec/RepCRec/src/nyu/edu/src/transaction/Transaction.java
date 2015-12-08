@@ -6,6 +6,12 @@ import java.util.Set;
 
 import nyu.edu.src.store.SiteAccessed;
 
+/**
+ * Reperesnts a transaction in the system
+ * 
+ * @author Rachita & Anto
+ *
+ */
 public class Transaction {
 
     public enum Status {

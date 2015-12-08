@@ -1,7 +1,6 @@
 package nyu.edu.src.transaction;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +14,12 @@ import nyu.edu.src.store.SiteAccessed;
 import nyu.edu.src.transaction.Transaction.Status;
 import nyu.edu.src.transaction.WaitOperation.OPERATION;
 
+/**
+ * Manages all the operations related to the transactions. This is the crux of the whole system. It never fails.
+ * 
+ * @author Rachita & Anto
+ *
+ */
 public class TransactionManager {
 
     public static final int numberOfTotalSites = 10;
@@ -122,7 +127,7 @@ public class TransactionManager {
         HashMap<String, Integer> snapshot = new HashMap<String, Integer>();
 
         // adding even variables
-        for (int i = 0; i < 10; i = i + 2) {
+        for (int i = 0; i < numberOfTotalSites; i = i + 2) {
             if (dataManager.getSites().get(i).getStatus() == ServerStatus.UP) {
                 for (int var = 2; var <= 20; var = var + 2) {
                     snapshot.put("x" + var, dataManager.getSites().get(i).read(var));
@@ -196,6 +201,7 @@ public class TransactionManager {
     }
 
     /**
+     * Clears all the locks held by the transaction and unblocks any waiting operation
      * 
      * @param timeStamp
      *            - the time moment that the Transaction comes to this method
@@ -277,7 +283,7 @@ public class TransactionManager {
                         transaction.addToSitesAccessed(siteAccessed);
 
                         // check if transaction is waiting for more locks
-
+                        
                         for (int j = i; j < count; j++) {
                             if (dummyOperations.get(j).getWaitingTransaction() == transaction) {
                             }

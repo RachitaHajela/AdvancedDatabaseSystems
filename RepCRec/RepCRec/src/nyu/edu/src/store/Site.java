@@ -73,6 +73,7 @@ public class Site {
 
     /**
      * Creates a new variable from id and value and adds it to the site
+     * 
      * @param id - id of the variable
      * @param value - value of the variable
      * 

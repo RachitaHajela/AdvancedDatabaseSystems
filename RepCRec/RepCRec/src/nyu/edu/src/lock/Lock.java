@@ -2,8 +2,6 @@ package nyu.edu.src.lock;
 
 import nyu.edu.src.transaction.Transaction;
 
-/**
- */
 public class Lock {
 
     /**
