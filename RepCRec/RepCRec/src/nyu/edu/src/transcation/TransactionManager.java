@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import nyu.edu.src.lock.Lock;
+import nyu.edu.src.store.DataManager;
 import nyu.edu.src.store.Site;
 import nyu.edu.src.store.Site.ServerStatus;
 import nyu.edu.src.store.SiteAccessed;
@@ -18,48 +19,22 @@ public class TransactionManager {
 
     public static final int numberOfTotalSites = 10;
     public static final int numberOfTotalVariables = 20;
-
-    private List<Site> sites;
+    
+    private DataManager dataManager;
     private Map<String, Transaction> transactionsMap;
     private List<WaitOperation> waitingOperations;
     int currentTime = 1;
-
-    /**
-     * sets up the initial database: sites with variables and their initial
-     * values
-     * 
-     * @author Rachita & Anto
-     */
-    public void setUp() {
-        // creating variables
-        List<Variable> varList = new ArrayList<Variable>();
-        for (int i = 1; i <= 20; i++) {
-            Variable v = new Variable(i, i * 10);
-            varList.add(v);
-        }
-        // creating sites
-        sites = new ArrayList<Site>();
-        for (int i = 1; i <= 10; i++) {
-            Site site = new Site(i);
-            site.setStatus(ServerStatus.UP);
-            sites.add(site);
-        }
-
-        // adding variables to site
-        for (int i = 1; i <= 20; i++) {
-            // var is odd
-            if (i % 2 != 0) {
-                sites.get(i % 10).addVariableToSite(varList.get(i - 1));
-            } else { // add to all sites
-                for (int j = 0; j < 10; j++) {
-                    sites.get(j).addVariableToSite(varList.get(i - 1));
-                }
-            }
-        }
+    
+    public TransactionManager() {
+        dataManager = new DataManager();
         transactionsMap = new HashMap<String, Transaction>();
         waitingOperations = new ArrayList<WaitOperation>();
     }
-
+    
+    public DataManager getDataManager() {
+        return dataManager;
+    }
+    
     /**
      * increases the time by one. (equivalent to 1 tick)
      * 
@@ -87,7 +62,7 @@ public class TransactionManager {
         HashMap<String, Integer> uncommitted = transaction
                 .getUncommitedVariables();
         for (String variable : uncommitted.keySet()) {
-            for (Site s : sites) {
+            for (Site s : dataManager.getSites()) {
                 if (s.variableExistsOnThisSite(variable)) {
                     if ((s.getStatus().compareTo(ServerStatus.UP) == 0 || s
                             .getStatus().compareTo(ServerStatus.RECOVERING) == 0)
@@ -148,9 +123,9 @@ public class TransactionManager {
 
         // adding even variables
         for (int i = 0; i < 10; i = i + 2) {
-            if (sites.get(i).getStatus() == ServerStatus.UP) {
+            if (dataManager.getSites().get(i).getStatus() == ServerStatus.UP) {
                 for (int var = 2; var <= 20; var = var + 2) {
-                    snapshot.put("x" + var, sites.get(i).read(var));
+                    snapshot.put("x" + var, dataManager.getSites().get(i).read(var));
                 }
                 break;
             }
@@ -158,9 +133,9 @@ public class TransactionManager {
         }
         // adding odd variables
         for (int i = 1; i < 10; i = i + 2) {
-            if (sites.get(i).getStatus() == ServerStatus.UP) {
-                snapshot.put("x" + i, sites.get(i).read(i));
-                snapshot.put("x" + (i + 10), sites.get(i).read(i + 10));
+            if (dataManager.getSites().get(i).getStatus() == ServerStatus.UP) {
+                snapshot.put("x" + i, dataManager.getSites().get(i).read(i));
+                snapshot.put("x" + (i + 10), dataManager.getSites().get(i).read(i + 10));
             }
         }
         return snapshot;
@@ -233,7 +208,7 @@ public class TransactionManager {
     public void clearLocksAndUnblock(int timestamp, Transaction transaction) {
         transactionsMap.remove(transaction.getID());
 
-        for (Site s : sites) {
+        for (Site s : dataManager.getSites()) {
             Map<String, ArrayList<Lock>> siteLockTable = s.getLockTable();
             ArrayList<String> dummySiteLockTable = new ArrayList<String>();
             for (String variable : siteLockTable.keySet()) {
@@ -333,44 +308,6 @@ public class TransactionManager {
     }
 
     /**
-     * site fails
-     * 
-     * @param timeStamp
-     *            - the timestamp of the failure of a site
-     * @param siteID
-     *            - the identifier of the site that is failing
-     * 
-     * @author Rachita & Anto
-     */
-    public void fail(int timestamp, int siteID) {
-        Site site = sites.get(siteID - 1);
-
-        if (site != null) {
-            System.out.println("FAIL : timestamp = " + timestamp
-                    + ", siteID = " + siteID);
-            site.failure(timestamp);
-        }
-    }
-
-    /**
-     * site recovers
-     * 
-     * @param timeStamp
-     *            - the timestamp of the recovery of a site
-     * @param siteID
-     *            - the identifier of the site that is recovering
-     * 
-     * @author Rachita & Anto
-     */
-    public void recover(int siteID) {
-        Site site = sites.get(siteID - 1);
-        if (site != null) {
-            System.out.println("RECOVER : siteID = " + siteID);
-            site.recover();
-        }
-    }
-
-    /**
      * transaction makes a write request
      * 
      * @param timeStamp
@@ -397,7 +334,7 @@ public class TransactionManager {
         // if variable is odd
         if (varNum % 2 != 0) {
             int siteNum = varNum % 10;
-            Site site = sites.get(siteNum);
+            Site site = dataManager.getSites().get(siteNum);
             if (site.getStatus() == ServerStatus.UP
                     || site.getStatus() == ServerStatus.RECOVERING) {
                 // take lock if not then wait or die
@@ -457,7 +394,7 @@ public class TransactionManager {
         boolean allLocksAcquired = true;
 
         for (int i = 0; i < 10; i++) {
-            Site site = sites.get(i);
+            Site site = dataManager.getSites().get(i);
             if (site.getStatus() == ServerStatus.UP
                     || site.getStatus() == ServerStatus.RECOVERING) {
                 // if lock can be taken
@@ -518,7 +455,7 @@ public class TransactionManager {
         // if variable is odd
         if (varNum % 2 != 0) {
             int siteNum = varNum % 10;
-            Site site = sites.get(siteNum);
+            Site site = dataManager.getSites().get(siteNum);
             if (site.getStatus() == ServerStatus.UP
                     || site.getStatus() == ServerStatus.RECOVERING) {
 
@@ -556,7 +493,7 @@ public class TransactionManager {
         {
             Boolean valueRead = false;
             for (int i = 0; i < 10; i++) {
-                Site site = sites.get(i);
+                Site site = dataManager.getSites().get(i);
                 if (site.getStatus() == ServerStatus.UP) {
                     if (site.isReadLockAvailable(variable)) {
                         site.getReadLock(transaction, variable);
@@ -573,8 +510,8 @@ public class TransactionManager {
             if (!valueRead) { // either all servers are down or there is a write
                 // lock.
                 for (int i = 0; i < 10; i++) {
-                    if (sites.get(i).getStatus() == ServerStatus.UP) {
-                        if (!sites.get(i).transactionWaits(transaction,
+                    if (dataManager.getSites().get(i).getStatus() == ServerStatus.UP) {
+                        if (!dataManager.getSites().get(i).transactionWaits(transaction,
                                 variable)) {
                             transaction.setTransactionStatus(Status.ABORTED);
                             System.out.println("Transaction " + transactionID
@@ -636,13 +573,13 @@ public class TransactionManager {
      */
     public void dump(int siteNum) {
         System.out.println("DUMP : siteNum = " + siteNum);
-        ServerStatus status = sites.get(siteNum - 1).getStatus();
+        ServerStatus status = dataManager.getSites().get(siteNum - 1).getStatus();
 
         if (status == ServerStatus.UP || status == ServerStatus.RECOVERING) {
-            System.out.println("Site " + sites.get(siteNum - 1).getId() + ": "
-                    + sites.get(siteNum - 1).getVariables());
+            System.out.println("Site " + dataManager.getSites().get(siteNum - 1).getId() + ": "
+                    + dataManager.getSites().get(siteNum - 1).getVariables());
         } else if (status == ServerStatus.DOWN) {
-            System.out.println("Site " + sites.get(siteNum - 1).getId()
+            System.out.println("Site " + dataManager.getSites().get(siteNum - 1).getId()
                     + ": Down");
         }
     }
@@ -659,7 +596,7 @@ public class TransactionManager {
     public void dump(String var) {
         int variableID = Integer.parseInt(var.substring(1));
 
-        for (Site s : sites) {
+        for (Site s : dataManager.getSites()) {
             ServerStatus status = s.getStatus();
 
             if (status == ServerStatus.UP || status == ServerStatus.RECOVERING) {

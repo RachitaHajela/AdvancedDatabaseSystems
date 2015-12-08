@@ -20,7 +20,6 @@ public class Executor {
     public Executor(String inputFile) {
         this.inputFile = inputFile;
         transactionManager = new TransactionManager();
-        transactionManager.setUp();
     }
 
     /**
@@ -64,10 +63,10 @@ public class Executor {
                         transactionManager.end(timestamp, inputToFunction);
                     } else if (functionToDo.equalsIgnoreCase("fail")) {
                         int siteID = Integer.parseInt(inputToFunction);
-                        transactionManager.fail(timestamp, siteID);
+                        transactionManager.getDataManager().fail(timestamp, siteID);
                     } else if (functionToDo.equalsIgnoreCase("recover")) {
                         int siteID = Integer.parseInt(inputToFunction);
-                        transactionManager.recover(siteID);
+                        transactionManager.getDataManager().recover(siteID);
                     } else if (functionToDo.equalsIgnoreCase("w")) {
                         String T = inputToFunction.split(",")[0].trim();
                         String var = inputToFunction.split(",")[1].trim();
