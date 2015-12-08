@@ -38,7 +38,7 @@ public class Executor {
             int timestamp = 1;
 
             while (command != null) {
-                System.out.println(command);
+              //  System.out.println(command);
                 if (command.startsWith("//") || command.isEmpty()) {
                     command = br.readLine();
                     continue;

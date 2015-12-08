@@ -81,9 +81,9 @@ public class TransactionManager {
      * @author Rachita & Anto
      */
     public void commitRequest(Transaction transaction, int timestamp) {
-        System.out.println("COMMIT : timestamp = " + timestamp
+        /*System.out.println("COMMIT : timestamp = " + timestamp
                 + ", transaction = " + transaction.getID());
-
+*/
         HashMap<String, Integer> uncommitted = transaction
                 .getUncommitedVariables();
         for (String variable : uncommitted.keySet()) {
@@ -112,8 +112,8 @@ public class TransactionManager {
      * @author Rachita & Anto
      */
     public void begin(int timeStamp, String transactionID) {
-        System.out.println("BEGIN : timestamp = " + timeStamp
-                + ", transaction = " + transactionID);
+        /*System.out.println("BEGIN : timestamp = " + timeStamp
+                + ", transaction = " + transactionID);*/
         Transaction trans = new Transaction(transactionID, timeStamp, false);
         transactionsMap.put(transactionID, trans);
     }
@@ -130,8 +130,8 @@ public class TransactionManager {
      * @author Rachita & Anto
      */
     public void beginRO(int timeStamp, String transactionID) {
-        System.out.println("BEGINRO : timestamp = " + timeStamp
-                + ", transaction = " + transactionID);
+        /*System.out.println("BEGINRO : timestamp = " + timeStamp
+                + ", transaction = " + transactionID);*/
         Transaction trans = new Transaction(transactionID, timeStamp, true);
         trans.setSnapshotIfReadOnly(takeSnapshot());
         transactionsMap.put(transactionID, trans);
@@ -143,8 +143,7 @@ public class TransactionManager {
      * @author Rachita & Anto
      */
 
-    // making public for testing
-    public HashMap<String, Integer> takeSnapshot() {
+    private HashMap<String, Integer> takeSnapshot() {
         HashMap<String, Integer> snapshot = new HashMap<String, Integer>();
 
         // adding even variables
@@ -168,7 +167,7 @@ public class TransactionManager {
     }
 
     /**
-     * transaction ends
+     * transaction ends, checks whether it can commit or not
      * 
      * @param timeStamp
      *            - the timestamp of the ending of the Transaction
@@ -187,7 +186,7 @@ public class TransactionManager {
         }
 
         if (transaction.getTransactionStatus() == Status.ABORTED) {
-            System.out.println("Transcation " + transactionID
+            System.out.println("Transaction " + transactionID
                     + " already aborted");
             return;
         }
@@ -209,13 +208,13 @@ public class TransactionManager {
                     return;
                 }
             }
-            System.out.println("Transcation " + transactionID + " commits");
+            System.out.println("Transaction " + transactionID + " commits");
             commitRequest(transaction, transactionTimestamp);
             transaction.commit(timestamp);
         }
 
         else {
-            System.out.println("Transcation " + transactionID + " commits");
+            System.out.println("Transaction " + transactionID + " commits");
             transaction.commit(timestamp);
         }
         clearLocksAndUnblock(timestamp, transaction);
@@ -385,9 +384,9 @@ public class TransactionManager {
     public void writeRequest(int timestamp, String transactionID,
             String variable, String val) {
         int value = Integer.parseInt(val);
-        System.out.println("WRITE : timestamp = " + timestamp
+        /*System.out.println("WRITE : timestamp = " + timestamp
                 + ", transaction = " + transactionID + ", variable = "
-                + variable + ", value = " + value);
+                + variable + ", value = " + value);*/
 
         Transaction transaction = transactionsMap.get(transactionID);
         int varNum = Integer.parseInt(variable.substring(1));
@@ -406,7 +405,6 @@ public class TransactionManager {
                             currentTime);
                     transaction.addToSitesAccessed(siteAccessed);
                     transaction.addToUncommitedVariables(variable, value);
-                    System.out.println("lock taken");
                 } else { // lock not available
                     if (site.transactionWaits(transaction, variable)) {
                         transaction.setTransactionStatus(Status.WAITING);
@@ -414,13 +412,13 @@ public class TransactionManager {
                                 transaction, OPERATION.WRITE, variable, site,
                                 value);
                         waitingOperations.add(waitOperation);
-                        System.out.println("waiting");
+                        
                     } else {
                         transaction.setTransactionStatus(Status.ABORTED);
                         System.out.println("Transaction " + transactionID
-                                + " Aborted!");
+                                + " Aborted because it was waiting for Older transaction");
                         clearLocksAndUnblock(timestamp, transaction);
-                        System.out.println("aborted");
+                        
                     }
 
                 }
@@ -476,7 +474,7 @@ public class TransactionManager {
                     } else {
                         transaction.setTransactionStatus(Status.ABORTED);
                         System.out.println("Transaction " + transaction.getID()
-                                + " Aborted!");
+                                + " Aborted because it was waiting for Older transaction");
                         clearLocksAndUnblock(timestamp, transaction);
                         return;
                     }
@@ -502,9 +500,9 @@ public class TransactionManager {
      * @author Rachita & Anto
      */
     public void readRequest(int timestamp, String transactionID, String variable) {
-        System.out.println("READ : timestamp = " + timestamp
+        /*System.out.println("READ : timestamp = " + timestamp
                 + ", transaction = " + transactionID + ", variable = "
-                + variable);
+                + variable);*/
 
         Transaction transaction = transactionsMap.get(transactionID);
         int varNum = Integer.parseInt(variable.substring(1));
@@ -538,7 +536,7 @@ public class TransactionManager {
                     } else {
                         transaction.setTransactionStatus(Status.ABORTED);
                         System.out.println("Transaction " + transactionID
-                                + " Aborted!");
+                                + " Aborted because it was waiting for Older transaction.");
                         clearLocksAndUnblock(timestamp, transaction);
                         return;
                     }
